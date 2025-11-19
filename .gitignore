@@ -1,0 +1,73 @@
+    ## Build and publish folders
+bin/
+obj/
+out/
+artifacts/
+
+## .NET Core generated files
+project.lock.json
+project.fragment.lock.json
+
+## User-specific files
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.sln.docstates
+
+## Logs
+*.log
+logs/
+Debug/
+Release/
+
+## Visual Studio files
+.vs/
+.idea/
+
+## Rider / JetBrains
+.idea/
+*.sln.iml
+
+## VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+## ASP.NET Core configuration
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.json
+
+## Secrets / keys
+*.pfx
+*.snk
+
+## NuGet
+*.nupkg
+packages/
+*.nuget.props
+*.nuget.targets
+
+## Publish and bundling
+wwwroot/dist/
+wwwroot/build/
+BundleConfig.json
+
+## Entity Framework
+Migrations/
+
+## Node assets
+node_modules/
+npm-debug.log
+yarn-error.log
+
+## Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.DS_Store
+Thumbs.db
