@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: db
+    environment:
+      POSTGRES_USER: episodes_user
+      POSTGRES_PASSWORD: episodes_password
+      POSTGRES_DB: episodes
+    ports:
+      - "5432:5432"
+    volumes:
+      - episodes_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  liquibase:
+    image: liquibase/liquibase:latest
+    container_name: liquibase
+    depends_on:
+      - db
+    volumes:
+      - ./liquibase:/liquibase/changelog
+    working_dir: /liquibase/changelog
+    environment:
+      LIQUIBASE_CLASSPATH: /liquibase/changelog/lib/postgresql-42.7.4.jar
+    # Don't auto-run anything on startup; we'll run commands manually.
+    entrypoint: ["tail", "-f", "/dev/null"]
+
+volumes:
+  episodes_data:
