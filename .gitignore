@@ -56,8 +56,6 @@ wwwroot/dist/
 wwwroot/build/
 BundleConfig.json
 
-## Entity Framework
-Migrations/
 
 ## Node assets
 node_modules/
