@@ -1,0 +1,11 @@
+DROP TABLE IF EXISTS public.watched_episodes;
+DROP TABLE IF EXISTS public.user_shows;
+DROP TABLE IF EXISTS public.genre_shows;
+DROP TABLE IF EXISTS public.genres;
+DROP TABLE IF EXISTS public.network_shows;
+DROP TABLE IF EXISTS public.tv_networks;
+DROP TABLE IF EXISTS public.episodes;
+DROP TABLE IF EXISTS public.seasons;
+DROP TABLE IF EXISTS public.shows;
+DROP TABLE IF EXISTS public.tv_data_providers;
+DROP TABLE IF EXISTS public.users;
