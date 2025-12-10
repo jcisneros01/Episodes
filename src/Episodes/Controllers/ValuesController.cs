@@ -1,17 +1,69 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Episodes.Data;
+using Episodes.Models.Entities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Episodes.Controllers;
 
 [Route("api/[controller]")]
 public class ValuesController : ControllerBase
 {
+    private readonly ApplicationDbContext _db;
+
+    public ValuesController(ApplicationDbContext db)
+    {
+        _db = db;
+    }
+    
     // GET api/values
     [HttpGet]
-    public IEnumerable<string> Get()
+    public async Task<IActionResult> Get()
     {
-        return new string[] { "value1", "value2" };
-    }
+        bool canConnect;
 
+        try
+        {
+            canConnect = await _db.Database.CanConnectAsync();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                canConnect = false,
+                error = "Error while checking DB connectivity",
+                exception = ex.Message
+            });
+        }
+
+        if (!canConnect)
+        {
+            return StatusCode(500, new
+            {
+                canConnect = false,
+                error = "Database is not reachable"
+            });
+        }
+        
+        var newUser = new User
+        {
+            Email = "jose@asu.edu",
+            PasswordHash = "sadfklasjdflka"
+        };
+
+        _db.Users.Add(newUser);
+        await _db.SaveChangesAsync();
+        
+        var fetchedUser = await _db.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == newUser.Id);
+
+        return Ok(new
+        {
+            canConnect,
+            fetchedUser
+        });
+    }
+    
     // GET api/values/5
     [HttpGet("{id}")]
     public string Get(int id)
