@@ -10,3 +10,14 @@ databaseChangeLog:
         - sqlFile:
             path: rollbacks/20251119_rollback_create_episodes_schema.sql
             relativeToChangelogFile: true
+  - changeSet:
+      id: 20251210_create_episodes_tables
+      author: jose
+      changes:
+        - sqlFile:
+            path: migrations/20251210_create_episodes_tables.sql
+            relativeToChangelogFile: true
+      rollback:
+        - sqlFile:
+            path: rollbacks/20251210_rollback_create_episodes_tables.sql
+            relativeToChangelogFile: true
