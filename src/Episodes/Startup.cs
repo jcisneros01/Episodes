@@ -16,7 +16,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         var connectionString = Configuration.GetConnectionString("DefaultConnection");
-        services.AddDbContext<AppDbContext>(options =>
+        services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(connectionString));
         
         services.AddControllers();
