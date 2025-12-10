@@ -56,7 +56,6 @@ wwwroot/dist/
 wwwroot/build/
 BundleConfig.json
 
-
 ## Node assets
 node_modules/
 npm-debug.log
