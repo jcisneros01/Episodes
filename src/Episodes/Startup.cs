@@ -1,4 +1,5 @@
-﻿using Episodes.Data;
+﻿using Episodes.Config;
+using Episodes.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Episodes;
@@ -18,6 +19,8 @@ public class Startup
         var connectionString = Configuration.GetConnectionString("DefaultConnection");
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(connectionString));
+        
+        services.Configure<TmdbOptions>(Configuration.GetSection(TmdbOptions.SectionName));
         
         services.AddControllers();
     }
