@@ -1,6 +1,9 @@
-﻿using Episodes.Config;
+﻿using System.Net.Http.Headers;
+using Episodes.Config;
 using Episodes.Data;
+using Episodes.Services.Tmdb;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Episodes;
 
@@ -21,6 +24,13 @@ public class Startup
             options.UseNpgsql(connectionString));
         
         services.Configure<TmdbOptions>(Configuration.GetSection(TmdbOptions.SectionName));
+
+        services.AddHttpClient<ITmdbClient, TmdbClient>((sp, client) =>
+        {
+            var tmdbOptions = sp.GetRequiredService<IOptions<TmdbOptions>>().Value;
+            client.BaseAddress = new Uri(tmdbOptions.BaseUrl);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tmdbOptions.ApiToken);
+        });
         
         services.AddControllers();
     }
