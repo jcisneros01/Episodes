@@ -25,7 +25,7 @@ public class TmdbClient : ITmdbClient
         {
             var requestUri = $"/3/search/tv?query={Uri.EscapeDataString(query)}";    
             
-            _logger.LogInformation("Calling TMDb search endpoint: {Url}", requestUri);
+            _logger.LogInformation("Calling TMDb tv show search endpoint: {Url}", requestUri);
             var response = await _client.GetAsync(requestUri, token);
             
             if (!response.IsSuccessStatusCode)
@@ -51,14 +51,70 @@ public class TmdbClient : ITmdbClient
             throw;
         }
     }
+    
+    
 
-    public Task<TmdbTvDetailsResponse> GetTvShowDetailsAsync(int seriesId, CancellationToken token = default)
+    public async Task<TmdbTvDetailsResponse?> GetTvShowDetailsAsync(int seriesId, CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var requestUri = $"/3/tv/{seriesId}";    
+            
+            _logger.LogInformation("Calling TMDb Get Tv Details endpoint: {Url}", requestUri);
+            var response = await _client.GetAsync(requestUri, token);
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorBody = await response.Content.ReadAsStringAsync(token);
+                _logger.LogError(
+                    "TMDb Get Tv Details request returned a {StatusCode} status code. Body: {Body}",
+                    (int)response.StatusCode,
+                    errorBody
+                );
+                
+                response.EnsureSuccessStatusCode();
+            }
+            
+            var content = await response.DeserializeJsonAsync<TmdbTvDetailsResponse>(cancellationToken: token);
+            return content;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "TMDb Get Tv Details request failed.");
+            
+            throw;
+        }
     }
 
-    public Task<TmdbTvSeasonDetailsResponse> GetTvShowSeasonDetails(int seriesId, int seasonNumber, CancellationToken token = default)
+    public async Task<TmdbTvSeasonDetailsResponse?> GetTvShowSeasonDetails(int seriesId, int seasonNumber, CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var requestUri = $"/3/tv/{seriesId}/season/{seasonNumber}";    
+            
+            _logger.LogInformation("Calling TMDb Get Tv Season Details endpoint: {Url}", requestUri);
+            var response = await _client.GetAsync(requestUri, token);
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorBody = await response.Content.ReadAsStringAsync(token);
+                _logger.LogError(
+                    "TMDb Get Tv Season Details request returned a {StatusCode} status code. Body: {Body}",
+                    (int)response.StatusCode,
+                    errorBody
+                );
+                
+                response.EnsureSuccessStatusCode();
+            }
+            
+            var content = await response.DeserializeJsonAsync<TmdbTvSeasonDetailsResponse>(cancellationToken: token);
+            return content;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "TMDb Get Tv Season Details request failed.");
+            
+            throw;
+        }
     }
 }

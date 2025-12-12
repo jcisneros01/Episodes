@@ -24,9 +24,17 @@ public class ValuesController : ControllerBase
     public async Task<IActionResult> Get(string query)
     {
         var tvShows = await _client.SearchTvShowsAsync("breaking bad");
+        
+        var show = tvShows?.Results.FirstOrDefault();
+        
+        var tvShowDetails = await _client.GetTvShowDetailsAsync(show!.Id);
+        
+        var seasonDetails = await _client.GetTvShowSeasonDetails(show.Id, 1);
         return Ok(new
         {
-          tvShows
+          tvShows,
+          tvShowDetails,
+          seasonDetails
         });
     }
     
