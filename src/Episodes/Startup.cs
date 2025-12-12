@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using System.Text.Json;
 using Episodes.Config;
 using Episodes.Data;
 using Episodes.Services.Tmdb;
@@ -32,7 +33,11 @@ public class Startup
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tmdbOptions.ApiToken);
         });
         
-        services.AddControllers();
+        services.AddControllers().AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+            options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
