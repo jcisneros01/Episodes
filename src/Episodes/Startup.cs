@@ -23,16 +23,19 @@ public class Startup
         var connectionString = Configuration.GetConnectionString("DefaultConnection");
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(connectionString));
-        
+
         services.Configure<TmdbOptions>(Configuration.GetSection(TmdbOptions.SectionName));
+
 
         services.AddHttpClient<ITmdbClient, TmdbClient>((sp, client) =>
         {
             var tmdbOptions = sp.GetRequiredService<IOptions<TmdbOptions>>().Value;
+
             client.BaseAddress = new Uri(tmdbOptions.BaseUrl);
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tmdbOptions.ApiToken);
-        });
-        
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", tmdbOptions.ApiToken);
+        }).AddStandardResilienceHandler();
+
         services.AddControllers().AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
@@ -57,10 +60,11 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
-            endpoints.MapGet("/", async context =>
-            {
-                await context.Response.WriteAsync("Welcome to running ASP.NET Core on AWS Lambda");
-            });
+            endpoints.MapGet("/",
+                async context =>
+                {
+                    await context.Response.WriteAsync("Welcome to running ASP.NET Core on AWS Lambda");
+                });
         });
     }
 }
