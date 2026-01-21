@@ -29,7 +29,7 @@ public class ValuesController : ControllerBase
         
         var tvShowDetails = await _client.GetTvShowDetailsAsync(show!.Id);
         
-        var seasonDetails = await _client.GetTvShowSeasonDetails(show.Id, 1);
+        var seasonDetails = await _client.GetTvShowSeasonDetailsAsync(show.Id, 1);
         return Ok(new
         {
           tvShows,
