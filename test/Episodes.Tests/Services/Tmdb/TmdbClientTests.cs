@@ -116,7 +116,6 @@ public class TmdbClientTests
             {
                 Content = new StringContent("""{"error":"not found"}""")
             });
-
         var httpClient = CreateHttpClient(handler);
         var sut = new TmdbClient(httpClient);
 
@@ -155,6 +154,25 @@ public class TmdbClientTests
         result.Id.Should().Be(1);
         result.Name.Should().Be("Season 1");
         result.SeasonNumber.Should().Be(1);
+    }
+    
+    [Test]
+    public async Task GetTvShowSeasonDetailsAsync_WhenHttpError_ThrowsException()
+    {
+        // Arrange
+        var handler = new StubHttpMessageHandler(
+            new HttpResponseMessage(HttpStatusCode.NotFound)
+            {
+                Content = new StringContent("""{"error":"not found"}""")
+            });
+        var httpClient = CreateHttpClient(handler);
+        var sut = new TmdbClient(httpClient);
+
+        // Act
+        var act = async () => await sut.GetTvShowSeasonDetailsAsync(1399, 1);
+
+        // Assert
+        await act.Should().ThrowAsync<TmdbApiException>();
     }
 
     private static HttpClient CreateHttpClient(HttpMessageHandler handler)
