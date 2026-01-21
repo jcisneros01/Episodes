@@ -31,7 +31,6 @@ public class TmdbClientTests
     public async Task SearchTvShowsAsync_WhenSuccessful_ReturnsResponse()
     {
         // Arrange
-        const string query = "game of thrones";
         var json = """
                    {
                      "page": 1,
@@ -49,7 +48,7 @@ public class TmdbClientTests
         var sut = new TmdbClient(httpClient);
 
         // Act
-        var result = await sut.SearchTvShowsAsync(query);
+        var result = await sut.SearchTvShowsAsync("game of thrones");
 
         // Assert
         result.Should().NotBeNull();
