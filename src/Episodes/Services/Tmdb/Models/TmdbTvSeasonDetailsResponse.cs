@@ -17,7 +17,8 @@ public sealed class TmdbTvSeasonDetailsResponse
 
     public string Overview { get; set; } = string.Empty;
 
-    public int Id { get; set; }
+    [JsonPropertyName("id")]
+    public int SeasonId { get; set; }
 
     public string PosterPath { get; set; } = string.Empty;
 
