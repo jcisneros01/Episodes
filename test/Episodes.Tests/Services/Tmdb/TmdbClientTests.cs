@@ -182,7 +182,7 @@ public class TmdbClientTests
         };
     }
 
-    private sealed class StubHttpMessageHandler : HttpMessageHandler
+    private class StubHttpMessageHandler : HttpMessageHandler
     {
         private readonly HttpResponseMessage _response;
 

@@ -1,6 +1,6 @@
 namespace Episodes.Config;
 
-public sealed class TmdbOptions
+public class TmdbOptions
 {
     public const string SectionName = "Tmdb";
 

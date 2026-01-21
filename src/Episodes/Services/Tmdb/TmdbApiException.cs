@@ -1,6 +1,6 @@
 namespace Episodes.Services.Tmdb;
 
-public sealed class TmdbApiException : HttpRequestException
+public class TmdbApiException : HttpRequestException
 {
     public int StatusCode { get; }
     

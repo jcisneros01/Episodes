@@ -1,6 +1,6 @@
 namespace Episodes.Services.Tmdb.Models;
 
-public sealed class TmdbTvSearchResult
+public class TmdbTvSearchResult
 {
     public bool Adult { get; set; }
 

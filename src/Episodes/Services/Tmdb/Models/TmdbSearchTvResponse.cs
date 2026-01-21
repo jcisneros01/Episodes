@@ -1,6 +1,6 @@
 namespace Episodes.Services.Tmdb.Models;
 
-public sealed class TmdbSearchTvResponse
+public class TmdbSearchTvResponse
 {
     public int Page { get; set; }
 

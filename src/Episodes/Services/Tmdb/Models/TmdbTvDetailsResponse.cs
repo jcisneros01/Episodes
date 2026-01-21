@@ -1,6 +1,6 @@
 namespace Episodes.Services.Tmdb.Models;
 
-public sealed class TmdbTvDetailsResponse
+public class TmdbTvDetailsResponse
 {
     public bool Adult { get; set; }
     public string BackdropPath { get; set; } = string.Empty;
@@ -52,7 +52,7 @@ public sealed class TmdbTvDetailsResponse
     public int VoteCount { get; set; }
 }
 
-public sealed class TmdbCreatedBy
+public class TmdbCreatedBy
 {
     public int Id { get; set; }
     public string CreditId { get; set; } = string.Empty;
@@ -62,13 +62,13 @@ public sealed class TmdbCreatedBy
     public string ProfilePath { get; set; } = string.Empty;
 }
 
-public sealed class TmdbGenre
+public class TmdbGenre
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
 }
 
-public sealed class TmdbEpisodeSummary
+public class TmdbEpisodeSummary
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
@@ -90,7 +90,7 @@ public sealed class TmdbEpisodeSummary
     public string StillPath { get; set; } = string.Empty;
 }
 
-public sealed class TmdbNetwork
+public class TmdbNetwork
 {
     public int Id { get; set; }
     public string LogoPath { get; set; } = string.Empty;
@@ -98,7 +98,7 @@ public sealed class TmdbNetwork
     public string OriginCountry { get; set; } = string.Empty;
 }
 
-public sealed class TmdbProductionCompany
+public class TmdbProductionCompany
 {
     public int Id { get; set; }
     public string LogoPath { get; set; } = string.Empty;
@@ -106,13 +106,13 @@ public sealed class TmdbProductionCompany
     public string OriginCountry { get; set; } = string.Empty;
 }
 
-public sealed class TmdbProductionCountry
+public class TmdbProductionCountry
 {
     public string Iso3166_1 { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
 }
 
-public sealed class TmdbSeasonSummary
+public class TmdbSeasonSummary
 {
     public string AirDate { get; set; } = string.Empty;
     public int EpisodeCount { get; set; }
@@ -127,7 +127,7 @@ public sealed class TmdbSeasonSummary
     public double VoteAverage { get; set; }
 }
 
-public sealed class TmdbSpokenLanguage
+public class TmdbSpokenLanguage
 {
     public string EnglishName { get; set; } = string.Empty;
     public string Iso639_1 { get; set; } = string.Empty; 

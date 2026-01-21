@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Episodes.Services.Tmdb.Models;
 
-public sealed class TmdbTvSeasonDetailsResponse
+public class TmdbTvSeasonDetailsResponse
 {
     [JsonPropertyName("_id")]
     public string Id { get; set; } = string.Empty;
@@ -27,7 +27,7 @@ public sealed class TmdbTvSeasonDetailsResponse
     public double VoteAverage { get; set; }
 }
 
-public sealed class TmdbSeasonEpisode
+public class TmdbSeasonEpisode
 {
     public string AirDate { get; set; } = string.Empty;
 
@@ -60,7 +60,7 @@ public sealed class TmdbSeasonEpisode
     public List<TmdbGuestStar> GuestStars { get; set; } = new();
 }
 
-public sealed class TmdbCrewMember
+public class TmdbCrewMember
 {
     public string Department { get; set; } = string.Empty;
 
@@ -85,7 +85,7 @@ public sealed class TmdbCrewMember
     public string ProfilePath { get; set; } = string.Empty;
 }
 
-public sealed class TmdbGuestStar
+public class TmdbGuestStar
 {
     public string Character { get; set; } = string.Empty;
 
