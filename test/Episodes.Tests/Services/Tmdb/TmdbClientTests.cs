@@ -194,6 +194,8 @@ public class TmdbClientTests
         protected override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
             CancellationToken cancellationToken)
-            => Task.FromResult(_response);
+        {
+            return Task.FromResult(_response);
+        }
     }
 }
