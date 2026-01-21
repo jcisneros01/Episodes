@@ -28,6 +28,13 @@ public class LambdaEntryPoint :
     /// <param name="builder">The IWebHostBuilder to configure.</param>
     protected override void Init(IWebHostBuilder builder)
     {
+        builder.ConfigureLogging(logging =>
+        {
+            logging.ClearProviders();
+            logging.AddConsole();
+            logging.SetMinimumLevel(LogLevel.Information);
+        });
+        
         builder
             .UseStartup<Startup>();
     }

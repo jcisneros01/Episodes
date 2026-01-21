@@ -1,5 +1,6 @@
 ﻿using Episodes.Data;
 using Episodes.Models.Entities;
+using Episodes.Services.Tmdb;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,57 +11,30 @@ public class ValuesController : ControllerBase
 {
     private readonly ApplicationDbContext _db;
 
-    public ValuesController(ApplicationDbContext db)
+    private readonly ITmdbClient _client;
+
+    public ValuesController(ApplicationDbContext db, ITmdbClient client)
     {
         _db = db;
+        _client = client;
     }
     
     // GET api/values
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get(string query)
     {
-        bool canConnect;
-
-        try
-        {
-            canConnect = await _db.Database.CanConnectAsync();
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new
-            {
-                canConnect = false,
-                error = "Error while checking DB connectivity",
-                exception = ex.Message
-            });
-        }
-
-        if (!canConnect)
-        {
-            return StatusCode(500, new
-            {
-                canConnect = false,
-                error = "Database is not reachable"
-            });
-        }
+        var tvShows = await _client.SearchTvShowsAsync("breaking bad");
         
-        var newUser = new User
-        {
-            Email = "jose@asu.edu",
-            PasswordHash = "sadfklasjdflka"
-        };
-
-        _db.Users.Add(newUser);
-        await _db.SaveChangesAsync();
+        var show = tvShows?.Results.FirstOrDefault();
         
-        var fetchedUser = await _db.Users
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == newUser.Id);
-
+        var tvShowDetails = await _client.GetTvShowDetailsAsync(show!.Id);
+        
+        var seasonDetails = await _client.GetTvShowSeasonDetailsAsync(show.Id, 1);
         return Ok(new
         {
-            canConnect,
-            fetchedUser
+          tvShows,
+          tvShowDetails,
+          seasonDetails
         });
     }
     
