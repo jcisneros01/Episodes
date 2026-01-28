@@ -1,4 +1,5 @@
 using Episodes.Extensions;
+using Episodes.Models.Tmdb;
 using Episodes.Services.Tmdb.Models;
 
 namespace Episodes.Services.Tmdb;
@@ -12,11 +13,12 @@ public class TmdbClient : ITmdbClient
         _client = client;
     }
 
-    public async Task<TmdbSearchTvResponse> SearchTvShowsAsync(string query, CancellationToken token = default)
+    public async Task<TmdbSearchTvResponse> SearchTvShowsAsync(string query, int? page,
+        CancellationToken token = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(query);
         
-        var requestUri = $"/3/search/tv?query={Uri.EscapeDataString(query)}";
+        var requestUri = $"/3/search/tv?query={Uri.EscapeDataString(query)}" + (page.HasValue ? $"&page={page.Value}" : "");
         
         return await GetAndDeserializeAsync<TmdbSearchTvResponse>(requestUri, token);
     }

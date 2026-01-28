@@ -20,7 +20,7 @@ public class TmdbClientTests
         var sut = new TmdbClient(httpClient);
 
         // Act
-        var act = async () => await sut.SearchTvShowsAsync(query!);
+        var act = async () => await sut.SearchTvShowsAsync(query!, null);
 
         // Assert
         var ex = await act.Should().ThrowAsync<ArgumentException>();
@@ -48,7 +48,7 @@ public class TmdbClientTests
         var sut = new TmdbClient(httpClient);
 
         // Act
-        var result = await sut.SearchTvShowsAsync("game of thrones");
+        var result = await sut.SearchTvShowsAsync("game of thrones", null);
 
         // Assert
         result.Should().NotBeNull();
@@ -71,7 +71,7 @@ public class TmdbClientTests
         var sut = new TmdbClient(httpClient);
 
         // Act
-        var act = async () => await sut.SearchTvShowsAsync("bad");
+        var act = async () => await sut.SearchTvShowsAsync("bad", null);
 
         // Assert
         await act.Should().ThrowAsync<TmdbApiException>();
@@ -150,7 +150,7 @@ public class TmdbClientTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Id.Should().Be(1);
+        result.Id.Should().Be("1");
         result.Name.Should().Be("Season 1");
         result.SeasonNumber.Should().Be(1);
     }

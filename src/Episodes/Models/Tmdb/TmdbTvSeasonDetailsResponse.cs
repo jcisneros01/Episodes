@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
+using Episodes.Services.Tmdb.Models;
 
-namespace Episodes.Services.Tmdb.Models;
+namespace Episodes.Models.Tmdb;
 
 public sealed class TmdbTvSeasonDetailsResponse
 {
