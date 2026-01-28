@@ -23,7 +23,7 @@ public class ValuesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Get(string query)
     {
-        var tvShows = await _client.SearchTvShowsAsync("breaking bad");
+        var tvShows = await _client.SearchTvShowsAsync("breaking bad", null);
         
         var show = tvShows?.Results.FirstOrDefault();
         
