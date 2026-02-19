@@ -46,8 +46,3 @@ public class TvShowService : ITvShowService
         }
     }
 }
-
-public interface ITvShowService
-{
-    Task<TvShowSearchResponse> SearchTvShowsAsync(string query, int? page, CancellationToken cancellationToken = default);
-}
