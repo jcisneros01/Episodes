@@ -150,7 +150,7 @@ public class TmdbClientTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Id.Should().Be("1");
+        result.SeasonId.Should().Be(1);
         result.Name.Should().Be("Season 1");
         result.SeasonNumber.Should().Be(1);
     }
