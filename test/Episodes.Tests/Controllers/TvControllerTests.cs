@@ -4,7 +4,6 @@ using Episodes.Services.Tv;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 namespace Episodes.Tests.Controllers;
