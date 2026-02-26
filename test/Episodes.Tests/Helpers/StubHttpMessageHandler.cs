@@ -1,0 +1,18 @@
+namespace Episodes.Tests.Helpers;
+
+internal sealed class StubHttpMessageHandler : HttpMessageHandler
+{
+    private readonly HttpResponseMessage _response;
+
+    public StubHttpMessageHandler(HttpResponseMessage response)
+    {
+        _response = response;
+    }
+
+    protected override Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken)
+    {
+        return Task.FromResult(_response);
+    }
+}
