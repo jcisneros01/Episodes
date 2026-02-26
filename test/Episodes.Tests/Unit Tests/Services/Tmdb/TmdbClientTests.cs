@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text;
 using Episodes.Services.Tmdb;
+using Episodes.Tests.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -180,22 +181,5 @@ public class TmdbClientTests
         {
             BaseAddress = new Uri("https://api.themoviedb.org")
         };
-    }
-
-    private sealed class StubHttpMessageHandler : HttpMessageHandler
-    {
-        private readonly HttpResponseMessage _response;
-
-        public StubHttpMessageHandler(HttpResponseMessage response)
-        {
-            _response = response;
-        }
-
-        protected override Task<HttpResponseMessage> SendAsync(
-            HttpRequestMessage request,
-            CancellationToken cancellationToken)
-        {
-            return Task.FromResult(_response);
-        }
     }
 }
