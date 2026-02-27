@@ -6,11 +6,11 @@ namespace Episodes.Controllers;
 
 [ApiController]
 [Route("api/shows")]
-public class TvController : ControllerBase
+public class ShowsController : ControllerBase
 {
     private readonly ITvShowService _tvShowService;
 
-    public TvController(ITvShowService tvShowService)
+    public ShowsController(ITvShowService tvShowService)
     {
         _tvShowService = tvShowService;
     }

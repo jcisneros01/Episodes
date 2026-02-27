@@ -9,17 +9,17 @@ using NUnit.Framework;
 namespace Episodes.Tests.Unit_Tests.Controllers;
 
 [TestFixture]
-public class TvControllerTests
+public class ShowsControllerTests
 {
     [SetUp]
     public void SetUp()
     {
         _tvShowService = Substitute.For<ITvShowService>();
-        _sut = new TvController(_tvShowService);
+        _sut = new ShowsController(_tvShowService);
     }
 
     private ITvShowService _tvShowService;
-    private TvController _sut;
+    private ShowsController _sut;
 
     [Test]
     public async Task SearchTvShows_WhenSuccessful_ReturnsOk()
