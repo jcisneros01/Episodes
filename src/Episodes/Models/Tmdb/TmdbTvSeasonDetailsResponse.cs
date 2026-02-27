@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using Episodes.Services.Tmdb.Models;
 
 namespace Episodes.Models.Tmdb;
 

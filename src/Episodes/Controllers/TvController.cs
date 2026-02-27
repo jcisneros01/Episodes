@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Episodes.Services.Tv;
 using Microsoft.AspNetCore.Mvc;
 
@@ -5,7 +6,7 @@ namespace Episodes.Controllers;
 
 [ApiController]
 [Route("api/shows")]
-public class TvController : Controller
+public class TvController : ControllerBase
 {
     private readonly ITvShowService _tvShowService;
     
@@ -17,6 +18,7 @@ public class TvController : Controller
     
     [HttpGet("search")]
     public async Task<IActionResult> SearchTvShows(
+        [Required]
         [FromQuery] string query, 
         [FromQuery] int? page,
         CancellationToken cancellationToken = default)

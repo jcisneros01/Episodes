@@ -5,7 +5,7 @@ using Episodes.Tests.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace Episodes.Tests.Services.Tmdb;
+namespace Episodes.Tests.Unit_Tests.Services.Tmdb;
 
 [TestFixture]
 public class TmdbClientTests

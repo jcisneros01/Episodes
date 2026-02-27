@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace Episodes.Tests.Controllers;
+namespace Episodes.Tests.Unit_Tests.Controllers;
 
 [TestFixture]
 public class TvControllerTests

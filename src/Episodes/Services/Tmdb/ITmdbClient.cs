@@ -1,5 +1,4 @@
 using Episodes.Models.Tmdb;
-using Episodes.Services.Tmdb.Models;
 
 namespace Episodes.Services.Tmdb;
 

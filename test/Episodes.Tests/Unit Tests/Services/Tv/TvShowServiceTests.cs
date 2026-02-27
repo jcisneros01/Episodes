@@ -1,5 +1,5 @@
+using Episodes.Models.Tmdb;
 using Episodes.Services.Tmdb;
-using Episodes.Services.Tmdb.Models;
 using Episodes.Services.Tv;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Testing;
@@ -7,7 +7,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
-namespace Episodes.Tests.Services.Tv;
+namespace Episodes.Tests.Unit_Tests.Services.Tv;
 
 [TestFixture]
 public class TvShowServiceTests

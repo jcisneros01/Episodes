@@ -1,5 +1,3 @@
-using Episodes.Services.Tv;
-
 namespace Episodes.Models.Tv;
 
 public class TvShowSearchResponse

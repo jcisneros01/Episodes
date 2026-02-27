@@ -1,4 +1,4 @@
-namespace Episodes.Services.Tmdb.Models;
+namespace Episodes.Models.Tmdb;
 
 public sealed class TmdbSearchTvResponse
 {
