@@ -1,8 +1,6 @@
-using Episodes.Services.Tv;
-using Microsoft.AspNetCore.Hosting;
+using Episodes.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
 namespace Episodes.Tests.Helpers;
@@ -25,9 +23,6 @@ public class EpisodesWebApplicationFactory : WebApplicationFactory<Program>
             });
         });
 
-        builder.ConfigureTestServices(services =>
-        {
-            services.AddSingleton(TvShowService);
-        });
+        builder.ConfigureTestServices(services => { services.AddSingleton(TvShowService); });
     }
 }

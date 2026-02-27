@@ -1,9 +1,9 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
+using Episodes.Clients;
 using Episodes.Config;
 using Episodes.Data;
-using Episodes.Services.Tmdb;
-using Episodes.Services.Tv;
+using Episodes.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -33,10 +33,7 @@ builder.Services.AddScoped<ITvShowService, TvShowService>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
-}
+if (app.Environment.IsDevelopment()) app.UseDeveloperExceptionPage();
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
@@ -44,6 +41,9 @@ app.MapControllers();
 
 app.Run();
 
-public partial class Program
+namespace Episodes
 {
+    public partial class Program
+    {
+    }
 }

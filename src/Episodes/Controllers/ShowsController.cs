@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Episodes.Services.Tv;
+using Episodes.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Episodes.Controllers;
