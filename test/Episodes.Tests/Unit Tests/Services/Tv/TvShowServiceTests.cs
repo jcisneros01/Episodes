@@ -16,12 +16,12 @@ public class TvShowServiceTests
     public void SetUp()
     {
         _client = Substitute.For<ITmdbClient>();
-        _logger = new FakeLogger<ITvShowService>();
+        _logger = new FakeLogger<TvShowService>();
         _sut = new TvShowService(_client, _logger);
     }
 
     private ITmdbClient _client;
-    private FakeLogger<ITvShowService> _logger;
+    private FakeLogger<TvShowService> _logger;
     private TvShowService _sut;
 
     [TestCase(null)]

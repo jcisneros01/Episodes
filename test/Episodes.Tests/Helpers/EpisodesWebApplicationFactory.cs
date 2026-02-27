@@ -7,7 +7,7 @@ using NSubstitute;
 
 namespace Episodes.Tests.Helpers;
 
-public class EpisodesWebApplicationFactory : WebApplicationFactory<LocalEntryPoint>
+public class EpisodesWebApplicationFactory : WebApplicationFactory<Program>
 {
     public ITvShowService TvShowService { get; } = Substitute.For<ITvShowService>();
 

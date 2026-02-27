@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Episodes** is an ASP.NET Core Web API (C#, .NET 8) that tracks TV shows. It integrates with The Movie Database (TMDB) API and is deployable as an AWS Lambda function via API Gateway. PostgreSQL is the database, managed with Liquibase migrations.
+**Episodes** is an ASP.NET Core Web API (C#, .NET 8) that tracks TV shows. It integrates with The Movie Database (TMDB) API. PostgreSQL is the database, managed with Liquibase migrations.
 
 ## Commands
 
@@ -35,11 +35,6 @@ cd liquibase && docker-compose up
 ```
 Connection string: `Host=localhost;Port=5432;Database=episodes;Username=episodes_user;Password=episodes_password`
 
-### AWS Lambda Deployment
-```bash
-cd src/Episodes && dotnet lambda deploy-serverless
-```
-
 ## Architecture
 
 ### Layer Flow
@@ -51,7 +46,7 @@ Database access (EF Core) is via `ApplicationDbContext` but is not yet wired int
 - `src/Episodes/Controllers/TvController.cs` — REST endpoints (`GET /api/shows/search`)
 - `src/Episodes/Services/Tv/TvShowService.cs` — Orchestrates TMDB calls, maps to internal DTOs
 - `src/Episodes/Services/Tmdb/TmdbClient.cs` — HTTP client for TMDB API (Bearer token auth, snake_case JSON)
-- `src/Episodes/Startup.cs` — DI registration, HTTP resilience config (retry + circuit breaker), JSON snake_case naming
+- `src/Episodes/Program.cs` — entry point, DI registration, HTTP resilience config (retry + circuit breaker), JSON snake_case naming
 - `src/Episodes/Data/ApplicationDbContext.cs` — EF Core DbContext for `episodes` PostgreSQL schema
 - `src/Episodes/Config/TmdbOptions.cs` — Bound from `"Tmdb"` config section
 
@@ -61,8 +56,7 @@ Database access (EF Core) is via `ApplicationDbContext` but is not yet wired int
 - `Models/Entities/` — EF Core entity classes (Show, Season, Episode, User, UserShow, WatchedEpisode, etc.)
 
 ### Entry Points
-- `LambdaEntryPoint.cs` — AWS Lambda (extends `APIGatewayProxyFunction`)
-- `LocalEntryPoint.cs` — Local Kestrel development server
+- `Program.cs` — application entry point (standard ASP.NET Core hosting)
 
 ### Testing Conventions
 - Framework: NUnit + xUnit, assertions via FluentAssertions, mocking via NSubstitute

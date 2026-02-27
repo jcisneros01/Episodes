@@ -7,20 +7,11 @@
     <EnableDefaultContentItems>False</EnableDefaultContentItems>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include=".\SampleRequests\*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.Core" Version="2.7.0" />
-    <PackageReference Include="Amazon.Lambda.TestUtilities" Version="3.0.0" />
-    <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.7.1" />
-    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.0.1" />
     <PackageReference Include="FluentAssertions" Version="8.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.*" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.Testing" Version="10.2.0" />
