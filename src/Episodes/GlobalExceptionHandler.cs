@@ -1,4 +1,7 @@
+using System.Net;
+using Episodes.Clients;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Episodes;
 
@@ -16,16 +19,39 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken)
     {
-        _logger.LogError(exception, "Unhandled exception");
+        HttpStatusCode statusCode;
+        string title;
 
-        httpContext.Response.StatusCode = 500;
-        httpContext.Response.ContentType = "application/problem+json";
-        await httpContext.Response.WriteAsJsonAsync(new
+        if (exception is TmdbApiException tmdbEx)
         {
-            title = "An unexpected error occurred.",
-            status = 500
+            (statusCode, title) = MapTmdbException(tmdbEx);
+        }
+        else
+        {
+            _logger.LogError(exception, "Unhandled exception");
+            statusCode = HttpStatusCode.InternalServerError;
+            title = "An unexpected error occurred.";
+        }
+
+        httpContext.Response.StatusCode = (int)statusCode;
+        httpContext.Response.ContentType = "application/problem+json";
+        await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
+        {
+            Status = (int)statusCode,
+            Title = title
         }, cancellationToken);
 
         return true;
+    }
+
+    private static (HttpStatusCode StatusCode, string Title) MapTmdbException(TmdbApiException ex)
+    {
+        switch (ex.StatusCode)
+        {
+            case HttpStatusCode.TooManyRequests:
+                return (HttpStatusCode.ServiceUnavailable, "The service is temporarily unavailable.");
+            default:
+                return (HttpStatusCode.BadGateway, "An error occurred communicating with an upstream service.");
+        }
     }
 }
