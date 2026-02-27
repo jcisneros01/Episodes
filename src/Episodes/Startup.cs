@@ -3,6 +3,7 @@ using System.Text.Json;
 using Episodes.Config;
 using Episodes.Data;
 using Episodes.Services.Tmdb;
+using Episodes.Services.Tv;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -41,6 +42,8 @@ public class Startup
             options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
             options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
         });
+
+        services.AddScoped<ITvShowService, TvShowService>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

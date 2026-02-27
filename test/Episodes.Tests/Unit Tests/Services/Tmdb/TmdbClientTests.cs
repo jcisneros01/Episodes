@@ -1,10 +1,11 @@
 using System.Net;
 using System.Text;
 using Episodes.Services.Tmdb;
+using Episodes.Tests.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace Episodes.Tests.Services.Tmdb;
+namespace Episodes.Tests.Unit_Tests.Services.Tmdb;
 
 [TestFixture]
 public class TmdbClientTests
@@ -20,7 +21,7 @@ public class TmdbClientTests
         var sut = new TmdbClient(httpClient);
 
         // Act
-        var act = async () => await sut.SearchTvShowsAsync(query!);
+        var act = async () => await sut.SearchTvShowsAsync(query!, null);
 
         // Assert
         var ex = await act.Should().ThrowAsync<ArgumentException>();
@@ -48,7 +49,7 @@ public class TmdbClientTests
         var sut = new TmdbClient(httpClient);
 
         // Act
-        var result = await sut.SearchTvShowsAsync("game of thrones");
+        var result = await sut.SearchTvShowsAsync("game of thrones", null);
 
         // Assert
         result.Should().NotBeNull();
@@ -71,7 +72,7 @@ public class TmdbClientTests
         var sut = new TmdbClient(httpClient);
 
         // Act
-        var act = async () => await sut.SearchTvShowsAsync("bad");
+        var act = async () => await sut.SearchTvShowsAsync("bad", null);
 
         // Assert
         await act.Should().ThrowAsync<TmdbApiException>();
@@ -150,11 +151,11 @@ public class TmdbClientTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Id.Should().Be(1);
+        result.SeasonId.Should().Be(1);
         result.Name.Should().Be("Season 1");
         result.SeasonNumber.Should().Be(1);
     }
-    
+
     [Test]
     public async Task GetTvShowSeasonDetailsAsync_WhenHttpError_ThrowsException()
     {
@@ -180,22 +181,5 @@ public class TmdbClientTests
         {
             BaseAddress = new Uri("https://api.themoviedb.org")
         };
-    }
-
-    private sealed class StubHttpMessageHandler : HttpMessageHandler
-    {
-        private readonly HttpResponseMessage _response;
-
-        public StubHttpMessageHandler(HttpResponseMessage response)
-        {
-            _response = response;
-        }
-
-        protected override Task<HttpResponseMessage> SendAsync(
-            HttpRequestMessage request,
-            CancellationToken cancellationToken)
-        {
-            return Task.FromResult(_response);
-        }
     }
 }

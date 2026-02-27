@@ -1,10 +1,10 @@
 using System.Text.Json.Serialization;
 
-namespace Episodes.Services.Tmdb.Models;
+namespace Episodes.Models.Tmdb;
 
 public sealed class TmdbTvSeasonDetailsResponse
 {
-    [JsonPropertyName("_id")]
+    [JsonPropertyName("_id")] 
     public string Id { get; set; } = string.Empty;
 
     public string AirDate { get; set; } = string.Empty;
@@ -17,7 +17,7 @@ public sealed class TmdbTvSeasonDetailsResponse
 
     public string Overview { get; set; } = string.Empty;
 
-    [JsonPropertyName("id")]
+    [JsonPropertyName("id")] 
     public int SeasonId { get; set; }
 
     public string PosterPath { get; set; } = string.Empty;

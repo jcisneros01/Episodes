@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Episodes.Models.Entities;
+﻿using Episodes.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Episodes.Data;
@@ -38,7 +36,8 @@ public partial class ApplicationDbContext : DbContext
 
             entity.ToTable("episodes", "episodes");
 
-            entity.HasIndex(e => new { e.SeasonId, e.EpisodeNumber }, "episodes_season_id_episode_number_key").IsUnique();
+            entity.HasIndex(e => new { e.SeasonId, e.EpisodeNumber }, "episodes_season_id_episode_number_key")
+                .IsUnique();
 
             entity.HasIndex(e => e.SeasonId, "episodes_season_id_idx");
 
@@ -151,7 +150,8 @@ public partial class ApplicationDbContext : DbContext
 
             entity.ToTable("shows", "episodes");
 
-            entity.HasIndex(e => new { e.ExternalId, e.DataProviderId }, "shows_external_id_data_provider_id_key").IsUnique();
+            entity.HasIndex(e => new { e.ExternalId, e.DataProviderId }, "shows_external_id_data_provider_id_key")
+                .IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.CreatedAt)
