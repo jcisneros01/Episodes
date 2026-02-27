@@ -4,7 +4,8 @@ namespace Episodes.Models.Tmdb;
 
 public sealed class TmdbTvSeasonDetailsResponse
 {
-    [JsonPropertyName("_id")] public string Id { get; set; } = string.Empty;
+    [JsonPropertyName("_id")] 
+    public string Id { get; set; } = string.Empty;
 
     public string AirDate { get; set; } = string.Empty;
 
@@ -16,7 +17,8 @@ public sealed class TmdbTvSeasonDetailsResponse
 
     public string Overview { get; set; } = string.Empty;
 
-    [JsonPropertyName("id")] public int SeasonId { get; set; }
+    [JsonPropertyName("id")] 
+    public int SeasonId { get; set; }
 
     public string PosterPath { get; set; } = string.Empty;
 
