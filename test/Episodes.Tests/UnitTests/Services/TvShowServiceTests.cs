@@ -1,7 +1,6 @@
 using Episodes.Clients;
 using Episodes.Services;
 using FluentAssertions;
-using Microsoft.Extensions.Logging.Testing;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
@@ -15,12 +14,10 @@ public class TvShowServiceTests
     public void SetUp()
     {
         _client = Substitute.For<ITmdbClient>();
-        _logger = new FakeLogger<TvShowService>();
-        _sut = new TvShowService(_client, _logger);
+        _sut = new TvShowService(_client);
     }
 
     private ITmdbClient _client;
-    private FakeLogger<TvShowService> _logger;
     private TvShowService _sut;
 
     [TestCase(null)]
@@ -74,24 +71,5 @@ public class TvShowServiceTests
         show.Overview.Should().Be("Walter White's transformation");
 
         await _client.Received(1).SearchTvShowsAsync("breaking bad", 1, Arg.Any<CancellationToken>());
-        _logger.Collector.GetSnapshot().Should().BeEmpty();
-    }
-
-    [Test]
-    public async Task SearchTvShowsAsync_ErrorOccurs_ThrowsException()
-    {
-        // Arrange
-        var exception = new Exception("TMDb is unavailable");
-        _client.SearchTvShowsAsync(Arg.Any<string>(), Arg.Any<int?>(), Arg.Any<CancellationToken>())
-            .ThrowsAsync(exception);
-
-        // Act
-        var act = async () => await _sut.SearchTvShowsAsync("breaking bad");
-
-        // Assert
-        await act.Should().ThrowAsync<Exception>().WithMessage("TMDb is unavailable");
-        _logger.Collector.GetSnapshot().Should().ContainSingle(r =>
-            r.Level == LogLevel.Error &&
-            r.Exception == exception);
     }
 }

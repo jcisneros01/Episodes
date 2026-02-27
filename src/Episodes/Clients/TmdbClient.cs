@@ -5,10 +5,12 @@ namespace Episodes.Clients;
 public class TmdbClient : ITmdbClient
 {
     private readonly HttpClient _client;
+    private readonly ILogger<TmdbClient> _logger;
 
-    public TmdbClient(HttpClient client)
+    public TmdbClient(HttpClient client, ILogger<TmdbClient> logger)
     {
         _client = client;
+        _logger = logger;
     }
 
     public async Task<TmdbSearchTvResponse> SearchTvShowsAsync(string query, int? page,
@@ -39,13 +41,19 @@ public class TmdbClient : ITmdbClient
 
     private async Task<T> GetAndDeserializeAsync<T>(string requestUri, CancellationToken token)
     {
+        _logger.LogDebug("Sending GET request to TMDb. Uri={RequestUri}", requestUri);
+
         using var response = await _client.GetAsync(requestUri, token);
 
         if (!response.IsSuccessStatusCode)
         {
             var errorBody = await response.Content.ReadAsStringAsync(token);
 
-            throw new TmdbApiException((int)response.StatusCode, requestUri, errorBody);
+            _logger.LogWarning(
+                "TMDb API returned non-success response. StatusCode={StatusCode} Uri={RequestUri} Body={ResponseBody}",
+                (int)response.StatusCode, requestUri, errorBody);
+
+            throw new TmdbApiException(response.StatusCode);
         }
 
         return await response.DeserializeJsonAsync<T>(token);

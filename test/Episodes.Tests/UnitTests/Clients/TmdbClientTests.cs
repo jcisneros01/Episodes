@@ -3,6 +3,7 @@ using System.Text;
 using Episodes.Clients;
 using Episodes.Tests.Helpers;
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Episodes.Tests.UnitTests.Clients;
@@ -16,9 +17,7 @@ public class TmdbClientTests
     public async Task SearchTvShowsAsync_WhenQueryIsNullOrWhitespace_ThrowsArgumentException(string? query)
     {
         // Arrange
-        var handler = new StubHttpMessageHandler(new HttpResponseMessage(HttpStatusCode.OK));
-        var httpClient = CreateHttpClient(handler);
-        var sut = new TmdbClient(httpClient);
+        var sut = CreateSut(new StubHttpMessageHandler(new HttpResponseMessage(HttpStatusCode.OK)));
 
         // Act
         var act = async () => await sut.SearchTvShowsAsync(query!, null);
@@ -40,13 +39,11 @@ public class TmdbClientTests
                      "total_results": 1
                    }
                    """;
-        var handler = new StubHttpMessageHandler(
+        var sut = CreateSut(new StubHttpMessageHandler(
             new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(json, Encoding.UTF8, "application/json")
-            });
-        var httpClient = CreateHttpClient(handler);
-        var sut = new TmdbClient(httpClient);
+            }));
 
         // Act
         var result = await sut.SearchTvShowsAsync("game of thrones", null);
@@ -63,13 +60,11 @@ public class TmdbClientTests
     public async Task SearchTvShowsAsync_WhenHttpError_ThrowsException()
     {
         // Arrange
-        var handler = new StubHttpMessageHandler(
+        var sut = CreateSut(new StubHttpMessageHandler(
             new HttpResponseMessage(HttpStatusCode.BadRequest)
             {
                 Content = new StringContent("""{"error":"bad request"}""")
-            });
-        var httpClient = CreateHttpClient(handler);
-        var sut = new TmdbClient(httpClient);
+            }));
 
         // Act
         var act = async () => await sut.SearchTvShowsAsync("bad", null);
@@ -89,13 +84,11 @@ public class TmdbClientTests
                      "number_of_seasons": 8
                    }
                    """;
-        var handler = new StubHttpMessageHandler(
+        var sut = CreateSut(new StubHttpMessageHandler(
             new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(json, Encoding.UTF8, "application/json")
-            });
-        var httpClient = CreateHttpClient(handler);
-        var sut = new TmdbClient(httpClient);
+            }));
 
         // Act
         var result = await sut.GetTvShowDetailsAsync(1399);
@@ -111,13 +104,11 @@ public class TmdbClientTests
     public async Task GetTvShowDetailsAsync_WhenHttpError_ThrowsException()
     {
         // Arrange
-        var handler = new StubHttpMessageHandler(
+        var sut = CreateSut(new StubHttpMessageHandler(
             new HttpResponseMessage(HttpStatusCode.NotFound)
             {
                 Content = new StringContent("""{"error":"not found"}""")
-            });
-        var httpClient = CreateHttpClient(handler);
-        var sut = new TmdbClient(httpClient);
+            }));
 
         // Act
         var act = async () => await sut.GetTvShowDetailsAsync(999);
@@ -138,13 +129,11 @@ public class TmdbClientTests
                      "episodes": []
                    }
                    """;
-        var handler = new StubHttpMessageHandler(
+        var sut = CreateSut(new StubHttpMessageHandler(
             new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(json, Encoding.UTF8, "application/json")
-            });
-        var httpClient = CreateHttpClient(handler);
-        var sut = new TmdbClient(httpClient);
+            }));
 
         // Act
         var result = await sut.GetTvShowSeasonDetailsAsync(1399, 1);
@@ -160,13 +149,11 @@ public class TmdbClientTests
     public async Task GetTvShowSeasonDetailsAsync_WhenHttpError_ThrowsException()
     {
         // Arrange
-        var handler = new StubHttpMessageHandler(
+        var sut = CreateSut(new StubHttpMessageHandler(
             new HttpResponseMessage(HttpStatusCode.NotFound)
             {
                 Content = new StringContent("""{"error":"not found"}""")
-            });
-        var httpClient = CreateHttpClient(handler);
-        var sut = new TmdbClient(httpClient);
+            }));
 
         // Act
         var act = async () => await sut.GetTvShowSeasonDetailsAsync(1399, 1);
@@ -175,11 +162,9 @@ public class TmdbClientTests
         await act.Should().ThrowAsync<TmdbApiException>();
     }
 
-    private static HttpClient CreateHttpClient(HttpMessageHandler handler)
+    private static TmdbClient CreateSut(HttpMessageHandler handler)
     {
-        return new HttpClient(handler)
-        {
-            BaseAddress = new Uri("https://api.themoviedb.org")
-        };
+        var client = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org") };
+        return new TmdbClient(client, NullLogger<TmdbClient>.Instance);
     }
 }
