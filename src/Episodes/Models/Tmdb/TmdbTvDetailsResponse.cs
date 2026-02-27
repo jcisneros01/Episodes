@@ -130,6 +130,6 @@ public sealed class TmdbSeasonSummary
 public sealed class TmdbSpokenLanguage
 {
     public string EnglishName { get; set; } = string.Empty;
-    public string Iso639_1 { get; set; } = string.Empty; 
+    public string Iso639_1 { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
 }

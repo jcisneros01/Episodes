@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Episodes.Models.Entities;
 
-namespace Episodes.Models.Entities;
-
-public partial class Genre
+public class Genre
 {
     public int Id { get; set; }
 

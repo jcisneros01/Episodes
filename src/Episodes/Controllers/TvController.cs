@@ -9,17 +9,16 @@ namespace Episodes.Controllers;
 public class TvController : ControllerBase
 {
     private readonly ITvShowService _tvShowService;
-    
+
     public TvController(ITvShowService tvShowService)
     {
         _tvShowService = tvShowService;
     }
 
-    
+
     [HttpGet("search")]
     public async Task<IActionResult> SearchTvShows(
-        [Required]
-        [FromQuery] string query, 
+        [Required] [FromQuery] string query,
         [FromQuery] int? page,
         CancellationToken cancellationToken = default)
     {

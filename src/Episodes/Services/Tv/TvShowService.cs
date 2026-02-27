@@ -34,14 +34,13 @@ public class TvShowService : ITvShowService
                 }).ToList(),
                 Page = tmdbSearchTvResponse.Page,
                 TotalPages = tmdbSearchTvResponse.TotalPages,
-                TotalResults = tmdbSearchTvResponse.TotalResults,
-               
+                TotalResults = tmdbSearchTvResponse.TotalResults
             };
         }
         catch (Exception e)
         {
             _logger.LogError(e, "TMDb search failed. Query={Query} Page={Page}", query, page);
-            
+
             throw;
         }
     }
