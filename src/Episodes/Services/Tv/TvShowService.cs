@@ -7,9 +7,9 @@ public class TvShowService : ITvShowService
 {
     private readonly ITmdbClient _client;
 
-    private readonly ILogger<ITvShowService> _logger;
+    private readonly ILogger<TvShowService> _logger;
 
-    public TvShowService(ITmdbClient client, ILogger<ITvShowService> logger)
+    public TvShowService(ITmdbClient client, ILogger<TvShowService> logger)
     {
         _client = client;
         _logger = logger;
