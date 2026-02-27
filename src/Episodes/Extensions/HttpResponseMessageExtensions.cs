@@ -20,11 +20,8 @@ public static class HttpResponseMessageExtensions
             stream,
             SnakeCaseOptions,
             cancellationToken);
-        if (content == null)
-        {
-            throw new InvalidOperationException("TMDb returned an empty or invalid JSON payload.");
-        }
-        
+        if (content == null) throw new InvalidOperationException("TMDb returned an empty or invalid JSON payload.");
+
         return content;
     }
 }

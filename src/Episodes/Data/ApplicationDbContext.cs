@@ -1,5 +1,4 @@
-﻿using Episodes.Models.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Episodes.Data;
 
