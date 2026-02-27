@@ -11,9 +11,6 @@ namespace Episodes.Tests.Integration_Tests.Controllers;
 [TestFixture]
 public class TvControllerIntegrationTests
 {
-    private EpisodesWebApplicationFactory _factory = null!;
-    private HttpClient _client = null!;
-
     [SetUp]
     public void SetUp()
     {
@@ -27,6 +24,9 @@ public class TvControllerIntegrationTests
         _client.Dispose();
         _factory.Dispose();
     }
+
+    private EpisodesWebApplicationFactory _factory = null!;
+    private HttpClient _client = null!;
 
     [Test]
     public async Task SearchTvShows_WhenSuccessful_ReturnsOk()
@@ -64,7 +64,7 @@ public class TvControllerIntegrationTests
         response.TotalPages.Should().Be(5);
         response.TotalResults.Should().Be(50);
         response.Results.Should().ContainSingle(x => x.Id == 1399 && x.Name == "Game of Thrones");
-        
+
         await _factory.TvShowService.Received(1)
             .SearchTvShowsAsync("game of thrones", 2, Arg.Any<CancellationToken>());
     }

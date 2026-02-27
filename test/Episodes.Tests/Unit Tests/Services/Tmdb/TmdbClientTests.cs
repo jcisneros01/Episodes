@@ -155,7 +155,7 @@ public class TmdbClientTests
         result.Name.Should().Be("Season 1");
         result.SeasonNumber.Should().Be(1);
     }
-    
+
     [Test]
     public async Task GetTvShowSeasonDetailsAsync_WhenHttpError_ThrowsException()
     {

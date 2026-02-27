@@ -11,15 +11,15 @@ namespace Episodes.Tests.Unit_Tests.Controllers;
 [TestFixture]
 public class TvControllerTests
 {
-    private ITvShowService _tvShowService;
-    private TvController _sut;
-
     [SetUp]
     public void SetUp()
     {
         _tvShowService = Substitute.For<ITvShowService>();
         _sut = new TvController(_tvShowService);
     }
+
+    private ITvShowService _tvShowService;
+    private TvController _sut;
 
     [Test]
     public async Task SearchTvShows_WhenSuccessful_ReturnsOk()
