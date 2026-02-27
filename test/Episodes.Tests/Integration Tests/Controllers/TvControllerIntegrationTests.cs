@@ -29,7 +29,7 @@ public class TvControllerIntegrationTests
     }
 
     [Test]
-    public async Task SearchTvShows_HappyPath_ReturnsOk()
+    public async Task SearchTvShows_WhenSuccessful_ReturnsOk()
     {
         // Arrange
         var serviceResponse = new TvShowSearchResponse
