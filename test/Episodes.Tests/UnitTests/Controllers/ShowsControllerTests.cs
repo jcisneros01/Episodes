@@ -44,4 +44,29 @@ public class ShowsControllerTests
         okResult.Value.Should().Be(expected);
         await _tvShowService.Received(1).SearchTvShowsAsync("breaking bad", 1, Arg.Any<CancellationToken>());
     }
+
+    [Test]
+    public async Task GetTvShow_WhenSuccessful_ReturnsOk()
+    {
+        // Arrange
+        var expected = new TvShowResponse
+        {
+            Id = 1396,
+            Name = "Breaking Bad",
+            PosterPath = "/ggFHVNu6YYI5L9pCfOacjizRGt.jpg",
+            Overview = "Walter White's transformation",
+            Status = "Ended"
+        };
+        _tvShowService.GetTvShowAsync(1396, Arg.Any<CancellationToken>())
+            .Returns(expected);
+
+        // Act
+        var result = await _sut.GetTvShow(1396);
+
+        // Assert
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        okResult.StatusCode.Should().Be(200);
+        okResult.Value.Should().Be(expected);
+        await _tvShowService.Received(1).GetTvShowAsync(1396, Arg.Any<CancellationToken>());
+    }
 }
