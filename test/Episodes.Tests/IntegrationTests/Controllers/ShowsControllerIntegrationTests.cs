@@ -120,4 +120,46 @@ public class ShowsControllerIntegrationTests
         await _factory.TvShowService.Received(1)
             .GetTvShowAsync(1396, Arg.Any<CancellationToken>());
     }
+
+    [Test]
+    public async Task GetSeasonEpisodesAsync_WhenSuccessful_ReturnsOk()
+    {
+        // Arrange
+        var serviceResponse = new TvSeasonResponse
+        {
+            Name = "Season 1",
+            Overview = "The first season.",
+            SeasonNumber = 1,
+            Episodes =
+            [
+                new Episode
+                {
+                    Name = "Pilot",
+                    Overview = "Walter White begins his transformation.",
+                    AirDate = "2008-01-20",
+                    EpisodeNumber = 1
+                }
+            ]
+        };
+        _factory.TvShowService
+            .GetSeasonEpisodesAsync(1396, 1, Arg.Any<CancellationToken>())
+            .Returns(serviceResponse);
+
+        // Act
+        var responseMessage = await _client.GetAsync("/api/shows/1396/season/1");
+
+        // Assert
+        responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var response = await responseMessage.DeserializeJsonAsync<TvSeasonResponse>();
+        response.Should().NotBeNull();
+        response.Name.Should().Be("Season 1");
+        response.Overview.Should().Be("The first season.");
+        response.SeasonNumber.Should().Be(1);
+        response.Episodes.Should().ContainSingle(x =>
+            x.Name == "Pilot" && x.EpisodeNumber == 1 && x.AirDate == "2008-01-20");
+
+        await _factory.TvShowService.Received(1)
+            .GetSeasonEpisodesAsync(1396, 1, Arg.Any<CancellationToken>());
+    }
 }

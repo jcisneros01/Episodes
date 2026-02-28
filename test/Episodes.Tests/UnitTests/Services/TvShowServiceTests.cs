@@ -120,4 +120,59 @@ public class TvShowServiceTests
 
         await _client.Received(1).GetTvShowDetailsAsync(1396, Arg.Any<CancellationToken>());
     }
+
+    [Test]
+    public async Task GetSeasonEpisodesAsync_WhenSuccessful_ReturnsTvSeasonResponse()
+    {
+        // Arrange
+        _client.GetTvShowSeasonDetailsAsync(1396, 1, Arg.Any<CancellationToken>())
+            .Returns(new TmdbTvSeasonDetailsResponse
+            {
+                Name = "Season 1",
+                Overview = "The first season.",
+                SeasonNumber = 1,
+                Episodes =
+                [
+                    new TmdbSeasonEpisode
+                    {
+                        Name = "Pilot",
+                        Overview = "Walter White begins his transformation.",
+                        AirDate = "2008-01-20",
+                        EpisodeNumber = 1
+                    },
+                    new TmdbSeasonEpisode
+                    {
+                        Name = "Cat's in the Bag",
+                        Overview = "Walt and Jesse dispose of the bodies.",
+                        AirDate = "2008-01-27",
+                        EpisodeNumber = 2
+                    }
+                ]
+            });
+
+        // Act
+        var result = await _sut.GetSeasonEpisodesAsync(1396, 1, CancellationToken.None);
+
+        // Assert
+        result.Name.Should().Be("Season 1");
+        result.Overview.Should().Be("The first season.");
+        result.SeasonNumber.Should().Be(1);
+        result.Episodes.Should().HaveCount(2);
+        result.Episodes[0].Should().BeEquivalentTo(new
+        {
+            Name = "Pilot",
+            Overview = "Walter White begins his transformation.",
+            AirDate = "2008-01-20",
+            EpisodeNumber = 1
+        });
+        result.Episodes[1].Should().BeEquivalentTo(new
+        {
+            Name = "Cat's in the Bag",
+            Overview = "Walt and Jesse dispose of the bodies.",
+            AirDate = "2008-01-27",
+            EpisodeNumber = 2
+        });
+
+        await _client.Received(1).GetTvShowSeasonDetailsAsync(1396, 1, Arg.Any<CancellationToken>());
+    }
 }
