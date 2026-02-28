@@ -113,8 +113,9 @@ public class ShowsControllerIntegrationTests
         response.NumberOfEpisodes.Should().Be(62);
         response.NumberOfSeasons.Should().Be(5);
         response.Networks.Should().ContainSingle().Which.Should().Be("AMC");
-        response.Genres.Should().BeEquivalentTo(["Drama", "Crime"]);
-        response.Seasons.Should().ContainSingle(x => x.Id == 3572 && x.Name == "Season 1" && x.SeasonNumber == 1 && x.EpisodeCount == 7);
+        response.Genres.Should().BeEquivalentTo("Drama", "Crime");
+        response.Seasons.Should().ContainSingle(x =>
+            x.Id == 3572 && x.Name == "Season 1" && x.SeasonNumber == 1 && x.EpisodeCount == 7);
 
         await _factory.TvShowService.Received(1)
             .GetTvShowAsync(1396, Arg.Any<CancellationToken>());

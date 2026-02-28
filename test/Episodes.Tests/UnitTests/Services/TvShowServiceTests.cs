@@ -2,7 +2,6 @@ using Episodes.Clients;
 using Episodes.Services;
 using FluentAssertions;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 namespace Episodes.Tests.UnitTests.Services;
@@ -112,10 +111,12 @@ public class TvShowServiceTests
         result.NumberOfEpisodes.Should().Be(62);
         result.NumberOfSeasons.Should().Be(5);
         result.Networks.Should().ContainSingle().Which.Should().Be("AMC");
-        result.Genres.Should().BeEquivalentTo(["Drama", "Crime"]);
+        result.Genres.Should().BeEquivalentTo("Drama", "Crime");
         result.Seasons.Should().HaveCount(2);
-        result.Seasons[0].Should().BeEquivalentTo(new { Id = 3572, Name = "Season 1", SeasonNumber = 1, EpisodeCount = 7 });
-        result.Seasons[1].Should().BeEquivalentTo(new { Id = 3573, Name = "Season 2", SeasonNumber = 2, EpisodeCount = 13 });
+        result.Seasons[0].Should()
+            .BeEquivalentTo(new { Id = 3572, Name = "Season 1", SeasonNumber = 1, EpisodeCount = 7 });
+        result.Seasons[1].Should()
+            .BeEquivalentTo(new { Id = 3573, Name = "Season 2", SeasonNumber = 2, EpisodeCount = 13 });
 
         await _client.Received(1).GetTvShowDetailsAsync(1396, Arg.Any<CancellationToken>());
     }
