@@ -11,7 +11,7 @@ public sealed class TvSeasonResponse
     public List<Episode> Episodes { get; set; } = new();
 }
 
-public class Episode
+public sealed class Episode
 {
     public string Name { get; set; } = string.Empty;
 

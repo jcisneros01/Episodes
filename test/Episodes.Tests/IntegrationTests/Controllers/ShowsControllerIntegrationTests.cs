@@ -122,7 +122,7 @@ public class ShowsControllerIntegrationTests
     }
 
     [Test]
-    public async Task GetSeasonEpisodes_WhenSuccessful_ReturnsOk()
+    public async Task GetSeasonEpisodesAsync_WhenSuccessful_ReturnsOk()
     {
         // Arrange
         var serviceResponse = new TvSeasonResponse
@@ -142,7 +142,7 @@ public class ShowsControllerIntegrationTests
             ]
         };
         _factory.TvShowService
-            .GetSeasonEpisodes(1396, 1, Arg.Any<CancellationToken>())
+            .GetSeasonEpisodesAsync(1396, 1, Arg.Any<CancellationToken>())
             .Returns(serviceResponse);
 
         // Act
@@ -160,6 +160,6 @@ public class ShowsControllerIntegrationTests
             x.Name == "Pilot" && x.EpisodeNumber == 1 && x.AirDate == "2008-01-20");
 
         await _factory.TvShowService.Received(1)
-            .GetSeasonEpisodes(1396, 1, Arg.Any<CancellationToken>());
+            .GetSeasonEpisodesAsync(1396, 1, Arg.Any<CancellationToken>());
     }
 }

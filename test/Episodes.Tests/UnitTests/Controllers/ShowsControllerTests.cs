@@ -71,7 +71,7 @@ public class ShowsControllerTests
     }
 
     [Test]
-    public async Task GetSeasonEpisodes_WhenSuccessful_ReturnsOk()
+    public async Task GetSeasonEpisodesAsync_WhenSuccessful_ReturnsOk()
     {
         // Arrange
         var expected = new TvSeasonResponse
@@ -81,7 +81,7 @@ public class ShowsControllerTests
             SeasonNumber = 1,
             Episodes = [new Episode { Name = "Pilot", EpisodeNumber = 1 }]
         };
-        _tvShowService.GetSeasonEpisodes(1396, 1, Arg.Any<CancellationToken>())
+        _tvShowService.GetSeasonEpisodesAsync(1396, 1, Arg.Any<CancellationToken>())
             .Returns(expected);
 
         // Act
@@ -91,6 +91,6 @@ public class ShowsControllerTests
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
         okResult.StatusCode.Should().Be(200);
         okResult.Value.Should().Be(expected);
-        await _tvShowService.Received(1).GetSeasonEpisodes(1396, 1, Arg.Any<CancellationToken>());
+        await _tvShowService.Received(1).GetSeasonEpisodesAsync(1396, 1, Arg.Any<CancellationToken>());
     }
 }

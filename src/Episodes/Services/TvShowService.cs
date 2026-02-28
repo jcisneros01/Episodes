@@ -61,7 +61,7 @@ public class TvShowService : ITvShowService
         };
     }
 
-    public async Task<TvSeasonResponse> GetSeasonEpisodes(int tvShowId, int seasonNumber,
+    public async Task<TvSeasonResponse> GetSeasonEpisodesAsync(int tvShowId, int seasonNumber,
         CancellationToken cancellationToken)
     {
         var tvSeasonDetailsResponse =

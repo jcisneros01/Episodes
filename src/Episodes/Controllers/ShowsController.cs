@@ -33,12 +33,11 @@ public class ShowsController : ControllerBase
         return Ok(result);
     }
 
-
     [HttpGet("{tvShowId:int}/season/{seasonNumber:int}")]
     public async Task<IActionResult> GetSeasonEpisodes(int tvShowId, int seasonNumber,
         CancellationToken cancellationToken = default)
     {
-        var result = await _tvShowService.GetSeasonEpisodes(tvShowId, seasonNumber, cancellationToken);
+        var result = await _tvShowService.GetSeasonEpisodesAsync(tvShowId, seasonNumber, cancellationToken);
         return Ok(result);
     }
 }

@@ -122,7 +122,7 @@ public class TvShowServiceTests
     }
 
     [Test]
-    public async Task GetSeasonEpisodes_WhenSuccessful_ReturnsTvSeasonResponse()
+    public async Task GetSeasonEpisodesAsync_WhenSuccessful_ReturnsTvSeasonResponse()
     {
         // Arrange
         _client.GetTvShowSeasonDetailsAsync(1396, 1, Arg.Any<CancellationToken>())
@@ -151,7 +151,7 @@ public class TvShowServiceTests
             });
 
         // Act
-        var result = await _sut.GetSeasonEpisodes(1396, 1, CancellationToken.None);
+        var result = await _sut.GetSeasonEpisodesAsync(1396, 1, CancellationToken.None);
 
         // Assert
         result.Name.Should().Be("Season 1");
