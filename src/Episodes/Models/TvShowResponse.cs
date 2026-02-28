@@ -11,24 +11,21 @@ public class TvShowResponse
     public string Overview { get; set; } = string.Empty;
 
     public string FirstAirDate { get; set; } = string.Empty;
-    
+
     public bool InProduction { get; set; }
-    
+
     public List<string> Networks { get; set; } = new();
-    
+
     public List<string> Genres { get; set; } = new();
 
     public string Status { get; set; } = string.Empty;
-    
+
     public List<TvSeasonSummary> Seasons { get; set; } = new();
-    
+
     public int NumberOfEpisodes { get; set; }
-    
+
     public int NumberOfSeasons { get; set; }
-
 }
-
-
 
 public sealed class TvSeasonSummary
 {
@@ -37,6 +34,6 @@ public sealed class TvSeasonSummary
     public string Name { get; set; } = string.Empty;
 
     public int SeasonNumber { get; set; }
-    
+
     public int EpisodeCount { get; set; }
 }

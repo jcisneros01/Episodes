@@ -18,7 +18,7 @@ public class TvShowService : ITvShowService
         ArgumentException.ThrowIfNullOrWhiteSpace(query);
 
         var tmdbSearchTvResponse = await _client.SearchTvShowsAsync(query, page, cancellationToken);
-        
+
         return new TvShowSearchResponse
         {
             Results = tmdbSearchTvResponse.Results.Select(x => new TvSearchResult
@@ -37,7 +37,7 @@ public class TvShowService : ITvShowService
     public async Task<TvShowResponse> GetTvShowAsync(int id, CancellationToken cancellationToken)
     {
         var tvDetailsResponse = await _client.GetTvShowDetailsAsync(id, cancellationToken);
-        
+
         return new TvShowResponse
         {
             Id = tvDetailsResponse.Id,
