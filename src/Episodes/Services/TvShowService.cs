@@ -60,4 +60,24 @@ public class TvShowService : ITvShowService
             }).ToList()
         };
     }
+
+    public async Task<TvSeasonResponse> GetSeasonEpisodes(int tvShowId, int seasonNumber,
+        CancellationToken cancellationToken)
+    {
+        var tvSeasonDetailsResponse =
+            await _client.GetTvShowSeasonDetailsAsync(tvShowId, seasonNumber, cancellationToken);
+        return new TvSeasonResponse
+        {
+            Name = tvSeasonDetailsResponse.Name,
+            Overview = tvSeasonDetailsResponse.Overview,
+            SeasonNumber = tvSeasonDetailsResponse.SeasonNumber,
+            Episodes = tvSeasonDetailsResponse.Episodes.Select(x => new Episode
+            {
+                Name = x.Name,
+                Overview = x.Overview,
+                AirDate = x.AirDate,
+                EpisodeNumber = x.EpisodeNumber
+            }).ToList()
+        };
+    }
 }
