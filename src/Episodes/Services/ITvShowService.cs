@@ -7,5 +7,5 @@ public interface ITvShowService
     Task<TvShowSearchResponse> SearchTvShowsAsync(string query, int? page,
         CancellationToken cancellationToken = default);
 
-    Task<TvShowResponse> GetTvShowAsync(int id, CancellationToken cancellationToken);
+    Task<TvShowResponse> GetTvShowAsync(int id, CancellationToken cancellationToken = default);
 }

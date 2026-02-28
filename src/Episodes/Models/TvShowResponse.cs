@@ -20,7 +20,7 @@ public class TvShowResponse
 
     public string Status { get; set; } = string.Empty;
     
-    public List<TVSeasonSummary> Seasons { get; set; } = new();
+    public List<TvSeasonSummary> Seasons { get; set; } = new();
     
     public int NumberOfEpisodes { get; set; }
     
@@ -30,7 +30,7 @@ public class TvShowResponse
 
 
 
-public sealed class TVSeasonSummary
+public sealed class TvSeasonSummary
 {
     public int Id { get; set; }
 

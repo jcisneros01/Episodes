@@ -88,7 +88,7 @@ public class ShowsControllerIntegrationTests
             Genres = ["Drama", "Crime"],
             Seasons =
             [
-                new TVSeasonSummary { Id = 3572, Name = "Season 1", SeasonNumber = 1, EpisodeCount = 7 }
+                new TvSeasonSummary { Id = 3572, Name = "Season 1", SeasonNumber = 1, EpisodeCount = 7 }
             ]
         };
         _factory.TvShowService

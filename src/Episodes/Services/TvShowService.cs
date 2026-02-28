@@ -51,7 +51,7 @@ public class TvShowService : ITvShowService
             Status = tvDetailsResponse.Status,
             NumberOfSeasons = tvDetailsResponse.NumberOfSeasons,
             NumberOfEpisodes = tvDetailsResponse.NumberOfEpisodes,
-            Seasons = tvDetailsResponse.Seasons.Select(x=> new TVSeasonSummary
+            Seasons = tvDetailsResponse.Seasons.Select(x => new TvSeasonSummary
             {
                 Id = x.Id,
                 Name = x.Name,
