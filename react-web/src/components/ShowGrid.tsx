@@ -6,6 +6,7 @@ interface ShowGridProps {
   loading: boolean
   error: string | null
   query: string
+  onShowClick?: (showId: number) => void
 }
 
 function SkeletonCard() {
@@ -21,7 +22,7 @@ function SkeletonCard() {
   )
 }
 
-export function ShowGrid({ data, loading, error, query }: ShowGridProps) {
+export function ShowGrid({ data, loading, error, query, onShowClick }: ShowGridProps) {
   if (loading) {
     return (
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
@@ -87,7 +88,7 @@ export function ShowGrid({ data, loading, error, query }: ShowGridProps) {
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
       {data.results.map((show) => (
-        <ShowCard key={show.id} show={show} />
+        <ShowCard key={show.id} show={show} onClick={() => onShowClick?.(show.id)} />
       ))}
     </div>
   )

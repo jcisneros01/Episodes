@@ -4,11 +4,15 @@ const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w300'
 
 interface ShowCardProps {
   show: TvSearchResult
+  onClick?: () => void
 }
 
-export function ShowCard({ show }: ShowCardProps) {
+export function ShowCard({ show, onClick }: ShowCardProps) {
   return (
-    <article className="flex flex-col overflow-hidden rounded-xl bg-gray-800 shadow-md transition hover:shadow-indigo-500/20 hover:ring-1 hover:ring-indigo-500/40">
+    <article
+      onClick={onClick}
+      className="flex cursor-pointer flex-col overflow-hidden rounded-xl bg-gray-800 shadow-md transition hover:shadow-indigo-500/20 hover:ring-1 hover:ring-indigo-500/40"
+    >
       <div className="aspect-[2/3] w-full bg-gray-700">
         {show.poster_path ? (
           <img
