@@ -2,7 +2,6 @@ using Episodes.Clients;
 using Episodes.Services;
 using FluentAssertions;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 namespace Episodes.Tests.UnitTests.Services;
@@ -71,5 +70,109 @@ public class TvShowServiceTests
         show.Overview.Should().Be("Walter White's transformation");
 
         await _client.Received(1).SearchTvShowsAsync("breaking bad", 1, Arg.Any<CancellationToken>());
+    }
+
+    [Test]
+    public async Task GetTvShowAsync_WhenSuccessful_ReturnsTvShowResponse()
+    {
+        // Arrange
+        _client.GetTvShowDetailsAsync(1396, Arg.Any<CancellationToken>())
+            .Returns(new TmdbTvDetailsResponse
+            {
+                Id = 1396,
+                Name = "Breaking Bad",
+                PosterPath = "/ggFHVNu6YYI5L9pCfOacjizRGt.jpg",
+                Overview = "Walter White's transformation",
+                FirstAirDate = "2008-01-20",
+                InProduction = false,
+                Status = "Ended",
+                NumberOfEpisodes = 62,
+                NumberOfSeasons = 5,
+                Networks = [new TmdbNetwork { Name = "AMC" }],
+                Genres = [new TmdbGenre { Name = "Drama" }, new TmdbGenre { Name = "Crime" }],
+                Seasons =
+                [
+                    new TmdbSeasonSummary { Id = 3572, Name = "Season 1", SeasonNumber = 1, EpisodeCount = 7 },
+                    new TmdbSeasonSummary { Id = 3573, Name = "Season 2", SeasonNumber = 2, EpisodeCount = 13 }
+                ]
+            });
+
+        // Act
+        var result = await _sut.GetTvShowAsync(1396, CancellationToken.None);
+
+        // Assert
+        result.Id.Should().Be(1396);
+        result.Name.Should().Be("Breaking Bad");
+        result.PosterPath.Should().Be("/ggFHVNu6YYI5L9pCfOacjizRGt.jpg");
+        result.Overview.Should().Be("Walter White's transformation");
+        result.FirstAirDate.Should().Be("2008-01-20");
+        result.InProduction.Should().BeFalse();
+        result.Status.Should().Be("Ended");
+        result.NumberOfEpisodes.Should().Be(62);
+        result.NumberOfSeasons.Should().Be(5);
+        result.Networks.Should().ContainSingle().Which.Should().Be("AMC");
+        result.Genres.Should().BeEquivalentTo("Drama", "Crime");
+        result.Seasons.Should().HaveCount(2);
+        result.Seasons[0].Should()
+            .BeEquivalentTo(new { Id = 3572, Name = "Season 1", SeasonNumber = 1, EpisodeCount = 7 });
+        result.Seasons[1].Should()
+            .BeEquivalentTo(new { Id = 3573, Name = "Season 2", SeasonNumber = 2, EpisodeCount = 13 });
+
+        await _client.Received(1).GetTvShowDetailsAsync(1396, Arg.Any<CancellationToken>());
+    }
+
+    [Test]
+    public async Task GetSeasonEpisodesAsync_WhenSuccessful_ReturnsTvSeasonResponse()
+    {
+        // Arrange
+        _client.GetTvShowSeasonDetailsAsync(1396, 1, Arg.Any<CancellationToken>())
+            .Returns(new TmdbTvSeasonDetailsResponse
+            {
+                Name = "Season 1",
+                Overview = "The first season.",
+                SeasonNumber = 1,
+                Episodes =
+                [
+                    new TmdbSeasonEpisode
+                    {
+                        Name = "Pilot",
+                        Overview = "Walter White begins his transformation.",
+                        AirDate = "2008-01-20",
+                        EpisodeNumber = 1
+                    },
+                    new TmdbSeasonEpisode
+                    {
+                        Name = "Cat's in the Bag",
+                        Overview = "Walt and Jesse dispose of the bodies.",
+                        AirDate = "2008-01-27",
+                        EpisodeNumber = 2
+                    }
+                ]
+            });
+
+        // Act
+        var result = await _sut.GetSeasonEpisodesAsync(1396, 1, CancellationToken.None);
+
+        // Assert
+        result.Name.Should().Be("Season 1");
+        result.Overview.Should().Be("The first season.");
+        result.SeasonNumber.Should().Be(1);
+        result.Episodes.Should().HaveCount(2);
+        result.Episodes[0].Should().BeEquivalentTo(new
+        {
+            Name = "Pilot",
+            Overview = "Walter White begins his transformation.",
+            AirDate = "2008-01-20",
+            EpisodeNumber = 1
+        });
+        result.Episodes[1].Should().BeEquivalentTo(new
+        {
+            Name = "Cat's in the Bag",
+            Overview = "Walt and Jesse dispose of the bodies.",
+            AirDate = "2008-01-27",
+            EpisodeNumber = 2
+        });
+
+        await _client.Received(1).GetTvShowSeasonDetailsAsync(1396, 1, Arg.Any<CancellationToken>());
     }
 }

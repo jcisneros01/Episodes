@@ -18,6 +18,7 @@ public class TvShowService : ITvShowService
         ArgumentException.ThrowIfNullOrWhiteSpace(query);
 
         var tmdbSearchTvResponse = await _client.SearchTvShowsAsync(query, page, cancellationToken);
+
         return new TvShowSearchResponse
         {
             Results = tmdbSearchTvResponse.Results.Select(x => new TvSearchResult
@@ -30,6 +31,53 @@ public class TvShowService : ITvShowService
             Page = tmdbSearchTvResponse.Page,
             TotalPages = tmdbSearchTvResponse.TotalPages,
             TotalResults = tmdbSearchTvResponse.TotalResults
+        };
+    }
+
+    public async Task<TvShowResponse> GetTvShowAsync(int id, CancellationToken cancellationToken)
+    {
+        var tvDetailsResponse = await _client.GetTvShowDetailsAsync(id, cancellationToken);
+
+        return new TvShowResponse
+        {
+            Id = tvDetailsResponse.Id,
+            Name = tvDetailsResponse.Name,
+            PosterPath = tvDetailsResponse.PosterPath,
+            Overview = tvDetailsResponse.Overview,
+            FirstAirDate = tvDetailsResponse.FirstAirDate,
+            InProduction = tvDetailsResponse.InProduction,
+            Networks = tvDetailsResponse.Networks.Select(x => x.Name).ToList(),
+            Genres = tvDetailsResponse.Genres.Select(x => x.Name).ToList(),
+            Status = tvDetailsResponse.Status,
+            NumberOfSeasons = tvDetailsResponse.NumberOfSeasons,
+            NumberOfEpisodes = tvDetailsResponse.NumberOfEpisodes,
+            Seasons = tvDetailsResponse.Seasons.Select(x => new TvSeasonSummary
+            {
+                Id = x.Id,
+                Name = x.Name,
+                SeasonNumber = x.SeasonNumber,
+                EpisodeCount = x.EpisodeCount
+            }).ToList()
+        };
+    }
+
+    public async Task<TvSeasonResponse> GetSeasonEpisodesAsync(int tvShowId, int seasonNumber,
+        CancellationToken cancellationToken)
+    {
+        var tvSeasonDetailsResponse =
+            await _client.GetTvShowSeasonDetailsAsync(tvShowId, seasonNumber, cancellationToken);
+        return new TvSeasonResponse
+        {
+            Name = tvSeasonDetailsResponse.Name,
+            Overview = tvSeasonDetailsResponse.Overview,
+            SeasonNumber = tvSeasonDetailsResponse.SeasonNumber,
+            Episodes = tvSeasonDetailsResponse.Episodes.Select(x => new Episode
+            {
+                Name = x.Name,
+                Overview = x.Overview,
+                AirDate = x.AirDate,
+                EpisodeNumber = x.EpisodeNumber
+            }).ToList()
         };
     }
 }
