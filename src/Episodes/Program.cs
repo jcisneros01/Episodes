@@ -49,7 +49,7 @@ app.Run();
 
 namespace Episodes
 {
-    public partial class Program
+    public class Program
     {
     }
 }
