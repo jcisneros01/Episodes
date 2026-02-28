@@ -25,4 +25,11 @@ public class ShowsController : ControllerBase
         var result = await _tvShowService.SearchTvShowsAsync(query, page, cancellationToken);
         return Ok(result);
     }
+
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetTvShow(int id, CancellationToken cancellationToken = default)
+    {
+        var result = await _tvShowService.GetTvShowAsync(id, cancellationToken);
+        return Ok(result);
+    }
 }
