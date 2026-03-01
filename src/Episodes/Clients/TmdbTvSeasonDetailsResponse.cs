@@ -41,13 +41,13 @@ public sealed class TmdbSeasonEpisode
 
     public string ProductionCode { get; set; } = string.Empty;
 
-    public int Runtime { get; set; }
+    public int? Runtime { get; set; }
 
     public int SeasonNumber { get; set; }
 
     public int ShowId { get; set; }
 
-    public string StillPath { get; set; } = string.Empty;
+    public string? StillPath { get; set; }
 
     public double VoteAverage { get; set; }
 
@@ -105,5 +105,5 @@ public sealed class TmdbGuestStar
 
     public double Popularity { get; set; }
 
-    public string ProfilePath { get; set; } = string.Empty;
+    public string? ProfilePath { get; set; }
 }
