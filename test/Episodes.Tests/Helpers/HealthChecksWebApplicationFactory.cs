@@ -10,9 +10,6 @@ namespace Episodes.Tests.Helpers;
 
 public sealed class HealthChecksWebApplicationFactory : EpisodesWebApplicationFactory
 {
-    private readonly ServiceProvider _entityFrameworkServiceProvider =
-        new ServiceCollection().AddEntityFrameworkSqlite().BuildServiceProvider();
-
     private SqliteConnection? _connection;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -21,10 +18,6 @@ public sealed class HealthChecksWebApplicationFactory : EpisodesWebApplicationFa
 
         builder.ConfigureTestServices(services =>
         {
-            services.RemoveAll<DbContextOptions>();
-            services.RemoveAll<DbContextOptions<ApplicationDbContext>>();
-            services.RemoveAll<ApplicationDbContext>();
-            services.RemoveAll<DbConnection>();
             services.RemoveAll<IDbContextOptionsConfiguration<ApplicationDbContext>>();
 
             services.AddSingleton<DbConnection>(_ =>
@@ -35,25 +28,7 @@ public sealed class HealthChecksWebApplicationFactory : EpisodesWebApplicationFa
             });
 
             services.AddDbContext<ApplicationDbContext>((sp, options) =>
-                options.UseSqlite(sp.GetRequiredService<DbConnection>())
-                    .UseInternalServiceProvider(_entityFrameworkServiceProvider));
+                options.UseSqlite(sp.GetRequiredService<DbConnection>()));
         });
-    }
-
-    public void EnsureDatabaseCreated()
-    {
-        using var scope = Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        dbContext.Database.EnsureCreated();
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-        base.Dispose(disposing);
-
-        if (!disposing) return;
-
-        _connection?.Dispose();
-        _entityFrameworkServiceProvider.Dispose();
     }
 }

@@ -29,7 +29,6 @@ public class HealthChecksIntegrationTests
         // Arrange
         await using var factory = new HealthChecksWebApplicationFactory();
         using var client = factory.CreateClient();
-        factory.EnsureDatabaseCreated();
 
         // Act
         var responseMessage = await client.GetAsync("/health/verify");
