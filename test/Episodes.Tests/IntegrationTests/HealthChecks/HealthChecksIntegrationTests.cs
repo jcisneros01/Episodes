@@ -12,23 +12,29 @@ public class HealthChecksIntegrationTests
     [Test]
     public async Task GetHealth_WhenApplicationIsRunning_ReturnsOk()
     {
+        // Arrange
         await using var factory = new EpisodesWebApplicationFactory();
         using var client = factory.CreateClient();
 
+        // Act
         var responseMessage = await client.GetAsync("/health");
 
+        // Assert
         responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Test]
     public async Task GetHealthVerify_WhenDatabaseIsAvailable_ReturnsOk()
     {
+        // Arrange
         await using var factory = new HealthChecksWebApplicationFactory();
         using var client = factory.CreateClient();
         factory.EnsureDatabaseCreated();
 
+        // Act
         var responseMessage = await client.GetAsync("/health/verify");
 
+        // Assert
         responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var response = await responseMessage.DeserializeJsonAsync<HealthCheckResponse>();
@@ -40,11 +46,14 @@ public class HealthChecksIntegrationTests
     [Test]
     public async Task GetHealthVerify_WhenDatabaseIsUnavailable_ReturnsServiceUnavailable()
     {
+        // Arrange
         await using var factory = new EpisodesWebApplicationFactory();
         using var client = factory.CreateClient();
 
+        // Act
         var responseMessage = await client.GetAsync("/health/verify");
 
+        // Assert
         responseMessage.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
 
         var response = await responseMessage.DeserializeJsonAsync<HealthCheckResponse>();
