@@ -18,11 +18,6 @@ public class HealthChecksIntegrationTests
         var responseMessage = await client.GetAsync("/health");
 
         responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var response = await responseMessage.DeserializeJsonAsync<HealthCheckResponse>();
-        response.Status.Should().Be("Healthy");
-        response.Checks.Should().ContainKey("self");
-        response.Checks["self"].Status.Should().Be("Healthy");
     }
 
     [Test]

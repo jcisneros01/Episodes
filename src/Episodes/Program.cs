@@ -13,7 +13,7 @@ using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Logging.AddJsonConsole();
+builder.Logging.AddConsole();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -52,8 +52,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapHealthChecks("/health", new HealthCheckOptions
 {
-    Predicate = registration => registration.Tags.Contains("live"),
-    ResponseWriter = HealthCheckResponseWriter.WriteAsync
+    Predicate = registration => registration.Tags.Contains("live")
 });
 app.MapHealthChecks("/health/verify", new HealthCheckOptions
 {
