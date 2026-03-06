@@ -17,7 +17,8 @@ public class EpisodesWebApplicationFactory : WebApplicationFactory<Program>
         {
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["ConnectionStrings:DefaultConnection"] = "Host=localhost;Database=test",
+                ["ConnectionStrings:DefaultConnection"] =
+                    "Host=127.0.0.1;Port=1;Database=test;Username=test;Password=test;Timeout=1;Command Timeout=1",
                 ["Tmdb:BaseUrl"] = "https://api.themoviedb.org",
                 ["Tmdb:ApiToken"] = "test-token"
             });
