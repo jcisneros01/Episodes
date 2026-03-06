@@ -4,7 +4,9 @@ using Episodes;
 using Episodes.Clients;
 using Episodes.Config;
 using Episodes.Data;
+using Episodes.Health;
 using Episodes.Services;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -32,6 +34,9 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
 });
 
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ApplicationDbContext>("database");
+
 builder.Services.AddScoped<ITvShowService, TvShowService>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
@@ -44,6 +49,17 @@ app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    Predicate = _ => false
+});
+
+app.MapHealthChecks("/health/verify", new HealthCheckOptions
+{
+    Predicate = check => check.Name == "database",
+    ResponseWriter = HealthCheckResponseWriter.WriteResponse
+});
 
 app.Run();
 
