@@ -3,12 +3,12 @@ using Episodes.Data;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Episodes.Tests.Helpers;
 
-public sealed class HealthChecksWebApplicationFactory : EpisodesWebApplicationFactory
+public sealed class IdentityWebApplicationFactory : EpisodesWebApplicationFactory
 {
     private SqliteConnection? _connection;
 
@@ -31,5 +31,22 @@ public sealed class HealthChecksWebApplicationFactory : EpisodesWebApplicationFa
             services.AddDbContext<ApplicationDbContext>((sp, options) =>
                 options.UseSqlite(sp.GetRequiredService<DbConnection>()));
         });
+    }
+
+    protected override IHost CreateHost(IHostBuilder builder)
+    {
+        var host = base.CreateHost(builder);
+
+        using var scope = host.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        dbContext.Database.EnsureCreated();
+
+        return host;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+        _connection?.Dispose();
     }
 }

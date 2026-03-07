@@ -26,13 +26,16 @@ Endpoints
 AUTHENTICATION
 
 Register a new user
-POST /auth/regi
+POST /api/auth/register
 
 Log in
-POST /auth/login
+POST /api/auth/login
 
 Refresh access token
-POST /auth/refresh
+POST /api/auth/refresh
+
+Current authenticated user
+GET /api/me
 
 🎬
 SHOWS (Read-Only TMDB Catalog)

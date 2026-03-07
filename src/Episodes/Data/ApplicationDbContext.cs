@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace Episodes.Data;
 
-public partial class ApplicationDbContext : DbContext
+public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<int>, int>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
@@ -21,14 +23,15 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<TvNetwork> TvNetworks { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
-
     public virtual DbSet<UserShow> UserShows { get; set; }
 
     public virtual DbSet<WatchedEpisode> WatchedEpisodes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+        ConfigureIdentitySchema(modelBuilder);
+
         modelBuilder.Entity<Episode>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("episodes_pkey");
@@ -234,27 +237,6 @@ public partial class ApplicationDbContext : DbContext
                     });
         });
 
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("users_pkey");
-
-            entity.ToTable("users", "episodes");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("created_at");
-            entity.Property(e => e.Email)
-                .HasMaxLength(254)
-                .HasColumnName("email");
-            entity.Property(e => e.PasswordHash)
-                .HasMaxLength(255)
-                .HasColumnName("password_hash");
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("updated_at");
-        });
-
         modelBuilder.Entity<UserShow>(entity =>
         {
             entity.HasKey(e => new { e.UserId, e.ShowId }).HasName("user_shows_pkey");
@@ -306,6 +288,147 @@ public partial class ApplicationDbContext : DbContext
         });
 
         OnModelCreatingPartial(modelBuilder);
+    }
+
+    private static void ConfigureIdentitySchema(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ApplicationUser>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("users_pkey");
+
+            entity.ToTable("users", "episodes");
+
+            entity.HasIndex(e => e.NormalizedUserName, "users_normalized_user_name_key").IsUnique();
+            entity.HasIndex(e => e.NormalizedEmail, "users_normalized_email_key").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.AccessFailedCount).HasColumnName("access_failed_count");
+            entity.Property(e => e.ConcurrencyStamp)
+                .HasMaxLength(255)
+                .HasColumnName("concurrency_stamp");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("now()")
+                .HasColumnName("created_at");
+            entity.Property(e => e.Email)
+                .HasMaxLength(254)
+                .HasColumnName("email");
+            entity.Property(e => e.EmailConfirmed).HasColumnName("email_confirmed");
+            entity.Property(e => e.LockoutEnabled).HasColumnName("lockout_enabled");
+            entity.Property(e => e.LockoutEnd).HasColumnName("lockout_end");
+            entity.Property(e => e.NormalizedEmail)
+                .HasMaxLength(254)
+                .HasColumnName("normalized_email");
+            entity.Property(e => e.NormalizedUserName)
+                .HasMaxLength(254)
+                .HasColumnName("normalized_user_name");
+            entity.Property(e => e.PasswordHash)
+                .HasMaxLength(255)
+                .HasColumnName("password_hash");
+            entity.Property(e => e.PhoneNumber)
+                .HasMaxLength(32)
+                .HasColumnName("phone_number");
+            entity.Property(e => e.PhoneNumberConfirmed).HasColumnName("phone_number_confirmed");
+            entity.Property(e => e.SecurityStamp)
+                .HasMaxLength(255)
+                .HasColumnName("security_stamp");
+            entity.Property(e => e.TwoFactorEnabled).HasColumnName("two_factor_enabled");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("now()")
+                .HasColumnName("updated_at");
+            entity.Property(e => e.UserName)
+                .HasMaxLength(254)
+                .HasColumnName("user_name");
+        });
+
+        modelBuilder.Entity<IdentityRole<int>>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("roles_pkey");
+
+            entity.ToTable("roles", "episodes");
+
+            entity.HasIndex(e => e.NormalizedName, "roles_normalized_name_key").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ConcurrencyStamp)
+                .HasMaxLength(255)
+                .HasColumnName("concurrency_stamp");
+            entity.Property(e => e.Name)
+                .HasMaxLength(256)
+                .HasColumnName("name");
+            entity.Property(e => e.NormalizedName)
+                .HasMaxLength(256)
+                .HasColumnName("normalized_name");
+        });
+
+        modelBuilder.Entity<IdentityRoleClaim<int>>(entity =>
+        {
+            entity.ToTable("role_claims", "episodes");
+
+            entity.HasIndex(e => e.RoleId, "role_claims_role_id_idx");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ClaimType).HasColumnName("claim_type");
+            entity.Property(e => e.ClaimValue).HasColumnName("claim_value");
+            entity.Property(e => e.RoleId).HasColumnName("role_id");
+        });
+
+        modelBuilder.Entity<IdentityUserClaim<int>>(entity =>
+        {
+            entity.ToTable("user_claims", "episodes");
+
+            entity.HasIndex(e => e.UserId, "user_claims_user_id_idx");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ClaimType).HasColumnName("claim_type");
+            entity.Property(e => e.ClaimValue).HasColumnName("claim_value");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+        });
+
+        modelBuilder.Entity<IdentityUserLogin<int>>(entity =>
+        {
+            entity.HasKey(e => new { e.LoginProvider, e.ProviderKey }).HasName("user_logins_pkey");
+
+            entity.ToTable("user_logins", "episodes");
+
+            entity.HasIndex(e => e.UserId, "user_logins_user_id_idx");
+
+            entity.Property(e => e.LoginProvider)
+                .HasMaxLength(128)
+                .HasColumnName("login_provider");
+            entity.Property(e => e.ProviderKey)
+                .HasMaxLength(128)
+                .HasColumnName("provider_key");
+            entity.Property(e => e.ProviderDisplayName).HasColumnName("provider_display_name");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+        });
+
+        modelBuilder.Entity<IdentityUserRole<int>>(entity =>
+        {
+            entity.HasKey(e => new { e.UserId, e.RoleId }).HasName("user_roles_pkey");
+
+            entity.ToTable("user_roles", "episodes");
+
+            entity.HasIndex(e => e.RoleId, "user_roles_role_id_idx");
+
+            entity.Property(e => e.RoleId).HasColumnName("role_id");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+        });
+
+        modelBuilder.Entity<IdentityUserToken<int>>(entity =>
+        {
+            entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name }).HasName("user_tokens_pkey");
+
+            entity.ToTable("user_tokens", "episodes");
+
+            entity.Property(e => e.LoginProvider)
+                .HasMaxLength(128)
+                .HasColumnName("login_provider");
+            entity.Property(e => e.Name)
+                .HasMaxLength(128)
+                .HasColumnName("name");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.Value).HasColumnName("value");
+        });
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

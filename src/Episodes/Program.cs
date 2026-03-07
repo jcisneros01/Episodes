@@ -7,16 +7,28 @@ using Episodes.Data;
 using Episodes.HealthChecks;
 using Episodes.Services;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? ["http://localhost:5173"];
 
 builder.Logging.AddConsole();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("react-app", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 builder.Services.Configure<TmdbOptions>(builder.Configuration.GetSection(TmdbOptions.SectionName));
 
@@ -39,7 +51,21 @@ builder.Services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy(), tags: ["live"])
     .AddDbContextCheck<ApplicationDbContext>("database", tags: ["ready"]);
 
+builder.Services.AddAuthorization();
+builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options =>
+    {
+        options.User.RequireUniqueEmail = true;
+        options.Password.RequiredLength = 8;
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+    })
+    .AddRoles<IdentityRole<int>>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
 builder.Services.AddScoped<ITvShowService, TvShowService>();
+builder.Services.AddSingleton<IEmailSender<ApplicationUser>, NoOpIdentityEmailSender>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
@@ -49,6 +75,8 @@ if (app.Environment.IsDevelopment()) app.UseDeveloperExceptionPage();
 
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
+app.UseCors("react-app");
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapHealthChecks("/health", new HealthCheckOptions
 {
@@ -59,6 +87,7 @@ app.MapHealthChecks("/health/verify", new HealthCheckOptions
     Predicate = registration => registration.Tags.Contains("ready"),
     ResponseWriter = HealthCheckResponseWriter.WriteAsync
 });
+app.MapGroup("/api/auth").MapIdentityApi<ApplicationUser>();
 app.MapControllers();
 
 app.Run();
