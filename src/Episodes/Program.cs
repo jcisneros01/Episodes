@@ -4,13 +4,16 @@ using Episodes;
 using Episodes.Clients;
 using Episodes.Config;
 using Episodes.Data;
+using Episodes.HealthChecks;
 using Episodes.Services;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Logging.AddJsonConsole();
+builder.Logging.AddConsole();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -32,6 +35,10 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
 });
 
+builder.Services.AddHealthChecks()
+    .AddCheck("self", () => HealthCheckResult.Healthy(), tags: ["live"])
+    .AddDbContextCheck<ApplicationDbContext>("database", tags: ["ready"]);
+
 builder.Services.AddScoped<ITvShowService, TvShowService>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
@@ -43,6 +50,15 @@ if (app.Environment.IsDevelopment()) app.UseDeveloperExceptionPage();
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.UseAuthorization();
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    Predicate = registration => registration.Tags.Contains("live")
+});
+app.MapHealthChecks("/health/verify", new HealthCheckOptions
+{
+    Predicate = registration => registration.Tags.Contains("ready"),
+    ResponseWriter = HealthCheckResponseWriter.WriteAsync
+});
 app.MapControllers();
 
 app.Run();
