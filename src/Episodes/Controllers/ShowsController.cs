@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using Episodes.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Episodes.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/shows")]
 public class ShowsController : ControllerBase
 {

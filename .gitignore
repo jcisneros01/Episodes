@@ -61,6 +61,11 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
+## React / Vite / TypeScript
+dist/
+.vite/
+*.tsbuildinfo
+
 ## Temporary files
 *.tmp
 *.temp

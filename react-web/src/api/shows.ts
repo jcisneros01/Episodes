@@ -1,3 +1,4 @@
+import { fetchJson } from './client'
 import type { TvShowSearchResponse, TvShowResponse, TvSeasonResponse } from '../types/shows'
 
 export async function searchShows(
@@ -6,26 +7,14 @@ export async function searchShows(
   signal?: AbortSignal,
 ): Promise<TvShowSearchResponse> {
   const params = new URLSearchParams({ query, page: String(page) })
-  const response = await fetch(`/api/shows/search?${params}`, { signal })
-
-  if (!response.ok) {
-    throw new Error(`Search failed: ${response.status} ${response.statusText}`)
-  }
-
-  return response.json() as Promise<TvShowSearchResponse>
+  return fetchJson<TvShowSearchResponse>(`/api/shows/search?${params}`, { signal })
 }
 
 export async function getShow(
   tvShowId: number,
   signal?: AbortSignal,
 ): Promise<TvShowResponse> {
-  const response = await fetch(`/api/shows/${tvShowId}`, { signal })
-
-  if (!response.ok) {
-    throw new Error(`Failed to load show: ${response.status} ${response.statusText}`)
-  }
-
-  return response.json() as Promise<TvShowResponse>
+  return fetchJson<TvShowResponse>(`/api/shows/${tvShowId}`, { signal })
 }
 
 export async function getSeasonEpisodes(
@@ -33,11 +22,5 @@ export async function getSeasonEpisodes(
   seasonNumber: number,
   signal?: AbortSignal,
 ): Promise<TvSeasonResponse> {
-  const response = await fetch(`/api/shows/${tvShowId}/season/${seasonNumber}`, { signal })
-
-  if (!response.ok) {
-    throw new Error(`Failed to load season: ${response.status} ${response.statusText}`)
-  }
-
-  return response.json() as Promise<TvSeasonResponse>
+  return fetchJson<TvSeasonResponse>(`/api/shows/${tvShowId}/season/${seasonNumber}`, { signal })
 }
