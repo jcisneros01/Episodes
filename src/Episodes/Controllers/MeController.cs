@@ -1,4 +1,5 @@
 using Episodes.Data;
+using Episodes.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -33,10 +34,4 @@ public sealed class MeController : ControllerBase
             user.EmailConfirmed,
             user.CreatedAt));
     }
-
-    public sealed record MeResponse(
-        int Id,
-        string Email,
-        bool EmailConfirmed,
-        DateTime CreatedAt);
 }
