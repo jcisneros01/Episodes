@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useShowDetail } from '../hooks/useShowDetail'
 import { SeasonAccordionItem } from './SeasonAccordionItem'
 
@@ -6,6 +7,9 @@ const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500'
 interface ShowDetailProps {
   showId: number
   onBack: () => void
+  isOnWatchlist: boolean
+  onAddToWatchlist: (showId: number) => Promise<unknown>
+  onRemoveFromWatchlist: (showId: number) => Promise<void>
 }
 
 function DetailSkeleton() {
@@ -32,8 +36,24 @@ function DetailSkeleton() {
   )
 }
 
-export function ShowDetail({ showId, onBack }: ShowDetailProps) {
+export function ShowDetail({ showId, onBack, isOnWatchlist, onAddToWatchlist, onRemoveFromWatchlist }: ShowDetailProps) {
   const { show, loading, error } = useShowDetail(showId)
+  const [watchlistLoading, setWatchlistLoading] = useState(false)
+
+  const handleWatchlistToggle = async () => {
+    setWatchlistLoading(true)
+    try {
+      if (isOnWatchlist) {
+        await onRemoveFromWatchlist(showId)
+      } else {
+        await onAddToWatchlist(showId)
+      }
+    } catch {
+      // errors handled by parent
+    } finally {
+      setWatchlistLoading(false)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -98,7 +118,24 @@ export function ShowDetail({ showId, onBack }: ShowDetailProps) {
             </div>
 
             <div className="flex-1 space-y-4">
-              <h2 className="text-3xl font-bold text-gray-100">{show.name}</h2>
+              <div className="flex items-start justify-between gap-4">
+                <h2 className="text-3xl font-bold text-gray-100">{show.name}</h2>
+                <button
+                  onClick={handleWatchlistToggle}
+                  disabled={watchlistLoading}
+                  className={`shrink-0 rounded-lg px-4 py-2 text-sm font-semibold transition disabled:opacity-50 ${
+                    isOnWatchlist
+                      ? 'border border-gray-600 bg-gray-800 text-gray-300 hover:border-red-500/40 hover:text-red-400'
+                      : 'bg-indigo-500 text-white hover:bg-indigo-400'
+                  }`}
+                >
+                  {watchlistLoading
+                    ? '...'
+                    : isOnWatchlist
+                      ? 'Remove from Watchlist'
+                      : 'Add to Watchlist'}
+                </button>
+              </div>
 
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-400">
                 {show.first_air_date && <span>{show.first_air_date}</span>}
