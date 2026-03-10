@@ -52,23 +52,26 @@ GET /shows/{showId}/seasons/{seasonNumber}/episodes
 ⭐
 WATCHLIST (Add/Remove Shows a User Follows)
 
-Get a user’s watchlist
-GET /users/{userId}/watchlist
+Get current user’s watchlist
+GET /api/watchlist
 
 Add a show to the watchlist
-POST /users/{userId}/watchlist/{showId}
+POST /api/watchlist/{showId}
 
 Remove a show from the watchlist
-DELETE /users/{userId}/watchlist/{showId}
+DELETE /api/watchlist/{showId}
 
 ✔️
 EPISODE WATCH STATUS (Mark Episodes Watched/Unwatched)
 
+Get watched episodes for a show
+GET /api/shows/{showId}/watched
+
 Mark an episode as watched
-POST /users/{userId}/shows/{showId}/episodes/{episodeId}/watched
+POST /api/shows/{showId}/episodes/{episodeId}/watched
 
 Unmark an episode as watched
-DELETE /users/{userId}/shows/{showId}/episodes/{episodeId}/watched
+DELETE /api/shows/{showId}/episodes/{episodeId}/watched
 
 ❤️
 HEALTH CHECKS
