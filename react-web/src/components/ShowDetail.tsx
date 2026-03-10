@@ -70,7 +70,6 @@ export function ShowDetail({ showId, onBack }: ShowDetailProps) {
 
       {show && (
         <div className="space-y-8">
-          {/* Hero section */}
           <div className="flex flex-col gap-8 md:flex-row">
             <div className="w-full max-w-xs shrink-0">
               {show.poster_path ? (
@@ -132,13 +131,10 @@ export function ShowDetail({ showId, onBack }: ShowDetailProps) {
                 </p>
               )}
 
-              {show.overview && (
-                <p className="leading-relaxed text-gray-300">{show.overview}</p>
-              )}
+              {show.overview && <p className="leading-relaxed text-gray-300">{show.overview}</p>}
             </div>
           </div>
 
-          {/* Seasons */}
           {show.seasons.length > 0 && (
             <div className="space-y-4">
               <h3 className="text-xl font-semibold text-gray-100">Seasons</h3>

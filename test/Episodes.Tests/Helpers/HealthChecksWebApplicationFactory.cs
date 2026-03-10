@@ -18,7 +18,8 @@ public sealed class HealthChecksWebApplicationFactory : EpisodesWebApplicationFa
 
         builder.ConfigureTestServices(services =>
         {
-            services.RemoveAll<IDbContextOptionsConfiguration<ApplicationDbContext>>();
+            services.RemoveAll<DbContextOptions<ApplicationDbContext>>();
+            services.RemoveAll<ApplicationDbContext>();
 
             services.AddSingleton<DbConnection>(_ =>
             {

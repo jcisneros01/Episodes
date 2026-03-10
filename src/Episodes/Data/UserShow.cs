@@ -14,5 +14,5 @@ public class UserShow
 
     public virtual Show Show { get; set; } = null!;
 
-    public virtual User User { get; set; } = null!;
+    public virtual ApplicationUser User { get; set; } = null!;
 }

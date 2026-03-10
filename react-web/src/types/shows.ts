@@ -1,49 +1,54 @@
 export interface TvSearchResult {
   id: number
   name: string
-  poster_path: string
-  overview: string
+  overview: string | null
+  poster_path: string | null
 }
 
 export interface TvShowSearchResponse {
-  results: TvSearchResult[]
   page: number
   total_pages: number
   total_results: number
+  results: TvSearchResult[]
 }
 
 export interface TvSeasonSummary {
   id: number
+  season_number: number
+  name: string
+  overview: string | null
+  air_date: string | null
+  episode_count: number
+  poster_path: string | null
+}
+
+export interface Episode {
+  id: number
+  episode_number: number
+  name: string
+  overview: string | null
+  air_date: string | null
+}
+
+export interface TvSeasonResponse {
+  id: number
   name: string
   season_number: number
-  episode_count: number
+  overview: string | null
+  air_date: string | null
+  episodes: Episode[]
 }
 
 export interface TvShowResponse {
   id: number
   name: string
-  poster_path: string
-  overview: string
-  first_air_date: string
-  in_production: boolean
-  networks: string[]
-  genres: string[]
+  overview: string | null
+  poster_path: string | null
+  first_air_date: string | null
   status: string
-  seasons: TvSeasonSummary[]
-  number_of_episodes: number
   number_of_seasons: number
-}
-
-export interface Episode {
-  name: string
-  overview: string
-  air_date: string
-  episode_number: number
-}
-
-export interface TvSeasonResponse {
-  name: string
-  overview: string
-  season_number: number
-  episodes: Episode[]
+  number_of_episodes: number
+  genres: string[]
+  networks: string[]
+  seasons: TvSeasonSummary[]
 }
