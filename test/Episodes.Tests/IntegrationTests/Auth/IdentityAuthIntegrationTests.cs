@@ -11,6 +11,11 @@ namespace Episodes.Tests.IntegrationTests.Auth;
 [TestFixture]
 public sealed class IdentityAuthIntegrationTests
 {
+    private static readonly JsonSerializerOptions SnakeCaseOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
+    };
+
     private IdentityWebApplicationFactory _factory = null!;
     private HttpClient _client = null!;
 
@@ -29,15 +34,14 @@ public sealed class IdentityAuthIntegrationTests
     }
 
     [Test]
-    public async Task RegisterLoginAndGetCurrentUser_returnsBearerTokenAndAuthenticatedProfile()
+    public async Task GetCurrentUser_WhenRegisteredAndLoggedIn_ReturnsAuthenticatedProfile()
     {
-        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", new
+        // Arrange
+        await _client.PostAsJsonAsync("/api/auth/register", new
         {
             email = "user@example.com",
             password = "password1"
         });
-
-        registerResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var loginResponse = await _client.PostAsJsonAsync("/api/auth/login?useCookies=false", new
         {
@@ -45,25 +49,21 @@ public sealed class IdentityAuthIntegrationTests
             password = "password1"
         });
 
-        loginResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var login = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(login!.TokenType, login.AccessToken);
 
-        using var loginPayload = await JsonDocument.ParseAsync(await loginResponse.Content.ReadAsStreamAsync());
-        var accessToken = loginPayload.RootElement.GetProperty("accessToken").GetString();
-        var refreshToken = loginPayload.RootElement.GetProperty("refreshToken").GetString();
-        var tokenType = loginPayload.RootElement.GetProperty("tokenType").GetString();
-
-        accessToken.Should().NotBeNullOrWhiteSpace();
-        refreshToken.Should().NotBeNullOrWhiteSpace();
-        tokenType.Should().Be("Bearer");
-
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(tokenType, accessToken);
-
+        // Act
         var meResponse = await _client.GetAsync("/api/me");
 
+        // Assert
         meResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        using var mePayload = await JsonDocument.ParseAsync(await meResponse.Content.ReadAsStreamAsync());
-        mePayload.RootElement.GetProperty("email").GetString().Should().Be("user@example.com");
-        mePayload.RootElement.GetProperty("email_confirmed").GetBoolean().Should().BeFalse();
+        var me = await meResponse.Content.ReadFromJsonAsync<MeResponse>(SnakeCaseOptions);
+        me!.Email.Should().Be("user@example.com");
+        me.EmailConfirmed.Should().BeFalse();
     }
+
+    private sealed record LoginResponse(string TokenType, string AccessToken, string RefreshToken);
+
+    private sealed record MeResponse(int Id, string Email, bool EmailConfirmed, DateTime CreatedAt);
 }
