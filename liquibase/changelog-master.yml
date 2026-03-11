@@ -54,3 +54,14 @@ databaseChangeLog:
         - sqlFile:
             path: rollbacks/20260311_rollback_add_external_id_to_genres_and_networks.sql
             relativeToChangelogFile: true
+  - changeSet:
+      id: 20260311_seed_tmdb_data_provider
+      author: jose
+      changes:
+        - sqlFile:
+            path: migrations/20260311_seed_tmdb_data_provider.sql
+            relativeToChangelogFile: true
+      rollback:
+        - sqlFile:
+            path: rollbacks/20260311_rollback_seed_tmdb_data_provider.sql
+            relativeToChangelogFile: true
