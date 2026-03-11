@@ -6,6 +6,8 @@ public class TvNetwork
 
     public string Name { get; set; } = null!;
 
+    public int ExternalId { get; set; }
+
     public string? LogoImgLink { get; set; }
 
     public DateTime CreatedAt { get; set; }

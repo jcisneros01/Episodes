@@ -43,3 +43,14 @@ databaseChangeLog:
         - sqlFile:
             path: rollbacks/20260310_rollback_add_show_season_columns.sql
             relativeToChangelogFile: true
+  - changeSet:
+      id: 20260311_add_external_id_to_genres_and_networks
+      author: jose
+      changes:
+        - sqlFile:
+            path: migrations/20260311_add_external_id_to_genres_and_networks.sql
+            relativeToChangelogFile: true
+      rollback:
+        - sqlFile:
+            path: rollbacks/20260311_rollback_add_external_id_to_genres_and_networks.sql
+            relativeToChangelogFile: true
