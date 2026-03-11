@@ -32,3 +32,14 @@ databaseChangeLog:
         - sqlFile:
             path: rollbacks/20260307_rollback_add_identity_auth.sql
             relativeToChangelogFile: true
+  - changeSet:
+      id: 20260310_add_show_season_columns
+      author: jose
+      changes:
+        - sqlFile:
+            path: migrations/20260310_add_show_season_columns.sql
+            relativeToChangelogFile: true
+      rollback:
+        - sqlFile:
+            path: rollbacks/20260310_rollback_add_show_season_columns.sql
+            relativeToChangelogFile: true
