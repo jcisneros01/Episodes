@@ -6,11 +6,11 @@ public class TvShowResponse
 
     public string Name { get; set; } = string.Empty;
 
-    public string PosterPath { get; set; } = string.Empty;
+    public string? PosterPath { get; set; } = string.Empty;
 
-    public string Overview { get; set; } = string.Empty;
+    public string? Overview { get; set; } = string.Empty;
 
-    public string FirstAirDate { get; set; } = string.Empty;
+    public DateOnly? FirstAirDate { get; set; } 
 
     public bool InProduction { get; set; }
 
@@ -31,7 +31,7 @@ public sealed class TvSeasonSummary
 {
     public int Id { get; set; }
 
-    public string Name { get; set; } = string.Empty;
+    public string? Name { get; set; } = string.Empty;
 
     public int SeasonNumber { get; set; }
 
