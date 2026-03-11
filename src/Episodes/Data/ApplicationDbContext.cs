@@ -82,6 +82,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser, I
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
                 .HasColumnName("created_at");
+            entity.Property(e => e.ExternalId).HasColumnName("external_id");
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .HasColumnName("name");
@@ -130,6 +131,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser, I
                 .HasColumnName("name");
             entity.Property(e => e.Overview).HasColumnName("overview");
             entity.Property(e => e.PosterImgLink).HasColumnName("poster_img_link");
+            entity.Property(e => e.EpisodeCount).HasColumnName("episode_count");
             entity.Property(e => e.SeasonNumber).HasColumnName("season_number");
             entity.Property(e => e.ShowId).HasColumnName("show_id");
             entity.Property(e => e.UpdatedAt)
@@ -165,7 +167,11 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser, I
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .HasColumnName("name");
+            entity.Property(e => e.Overview).HasColumnName("overview");
             entity.Property(e => e.PosterImgLink).HasColumnName("poster_img_link");
+            entity.Property(e => e.InProduction).HasColumnName("in_production");
+            entity.Property(e => e.NumberOfSeasons).HasColumnName("number_of_seasons");
+            entity.Property(e => e.NumberOfEpisodes).HasColumnName("number_of_episodes");
             entity.Property(e => e.PremieredDate).HasColumnName("premiered_date");
             entity.Property(e => e.Status).HasColumnName("status");
             entity.Property(e => e.UpdatedAt)
@@ -210,6 +216,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser, I
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
                 .HasColumnName("created_at");
+            entity.Property(e => e.ExternalId).HasColumnName("external_id");
             entity.Property(e => e.LogoImgLink).HasColumnName("logo_img_link");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
