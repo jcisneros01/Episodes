@@ -65,6 +65,7 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddScoped<ITvShowService, TvShowService>();
+builder.Services.AddScoped<IWatchlistService, WatchlistService>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, NoOpIdentityEmailSender>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
