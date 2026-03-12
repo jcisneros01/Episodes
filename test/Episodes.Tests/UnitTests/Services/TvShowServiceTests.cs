@@ -1,6 +1,8 @@
 using Episodes.Clients;
+using Episodes.Data;
 using Episodes.Services;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -12,10 +14,25 @@ public class TvShowServiceTests
     [SetUp]
     public void SetUp()
     {
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+
+        _dbContext = new ApplicationDbContext(options);
+        _dbContext.TvDataProviders.Add(new TvDataProvider { Id = 1, Name = "tmdb" });
+        _dbContext.SaveChanges();
+
         _client = Substitute.For<ITmdbClient>();
-        _sut = new TvShowService(_client);
+        _sut = new TvShowService(_client, _dbContext);
     }
 
+    [TearDown]
+    public void TearDown()
+    {
+        _dbContext.Dispose();
+    }
+
+    private ApplicationDbContext _dbContext;
     private ITmdbClient _client;
     private TvShowService _sut;
 
@@ -105,7 +122,7 @@ public class TvShowServiceTests
         result.Name.Should().Be("Breaking Bad");
         result.PosterPath.Should().Be("/ggFHVNu6YYI5L9pCfOacjizRGt.jpg");
         result.Overview.Should().Be("Walter White's transformation");
-        result.FirstAirDate.Should().Be("2008-01-20");
+        result.FirstAirDate.Should().Be(new DateOnly(2008, 1, 20));
         result.InProduction.Should().BeFalse();
         result.Status.Should().Be("Ended");
         result.NumberOfEpisodes.Should().Be(62);
@@ -162,14 +179,14 @@ public class TvShowServiceTests
         {
             Name = "Pilot",
             Overview = "Walter White begins his transformation.",
-            AirDate = "2008-01-20",
+            AirDate = (DateOnly?)new DateOnly(2008, 1, 20),
             EpisodeNumber = 1
         });
         result.Episodes[1].Should().BeEquivalentTo(new
         {
             Name = "Cat's in the Bag",
             Overview = "Walt and Jesse dispose of the bodies.",
-            AirDate = "2008-01-27",
+            AirDate = (DateOnly?)new DateOnly(2008, 1, 27),
             EpisodeNumber = 2
         });
 

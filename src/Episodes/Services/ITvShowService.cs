@@ -9,6 +9,6 @@ public interface ITvShowService
 
     Task<TvShowResponse> GetTvShowAsync(int externalShowId, CancellationToken cancellationToken = default);
 
-    Task<TvSeasonResponse> GetSeasonEpisodesAsync(int tvShowId, int seasonNumber,
+    Task<TvSeasonResponse> GetSeasonEpisodesAsync(int externaltvShowId, int seasonNumber,
         CancellationToken cancellationToken = default);
 }

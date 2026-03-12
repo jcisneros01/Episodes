@@ -79,7 +79,7 @@ public class ShowsControllerIntegrationTests
             Name = "Breaking Bad",
             PosterPath = "/ggFHVNu6YYI5L9pCfOacjizRGt.jpg",
             Overview = "Walter White's transformation",
-            FirstAirDate = "2008-01-20",
+            FirstAirDate = new DateOnly(2008, 1, 20),
             InProduction = false,
             Status = "Ended",
             NumberOfEpisodes = 62,
@@ -107,7 +107,7 @@ public class ShowsControllerIntegrationTests
         response.Name.Should().Be("Breaking Bad");
         response.PosterPath.Should().Be("/ggFHVNu6YYI5L9pCfOacjizRGt.jpg");
         response.Overview.Should().Be("Walter White's transformation");
-        response.FirstAirDate.Should().Be("2008-01-20");
+        response.FirstAirDate.Should().Be(new DateOnly(2008, 1, 20));
         response.InProduction.Should().BeFalse();
         response.Status.Should().Be("Ended");
         response.NumberOfEpisodes.Should().Be(62);
@@ -132,11 +132,11 @@ public class ShowsControllerIntegrationTests
             SeasonNumber = 1,
             Episodes =
             [
-                new Episode
+                new EpisodeResponse
                 {
                     Name = "Pilot",
                     Overview = "Walter White begins his transformation.",
-                    AirDate = "2008-01-20",
+                    AirDate = new DateOnly(2008, 1, 20),
                     EpisodeNumber = 1
                 }
             ]
@@ -157,7 +157,7 @@ public class ShowsControllerIntegrationTests
         response.Overview.Should().Be("The first season.");
         response.SeasonNumber.Should().Be(1);
         response.Episodes.Should().ContainSingle(x =>
-            x.Name == "Pilot" && x.EpisodeNumber == 1 && x.AirDate == "2008-01-20");
+            x.Name == "Pilot" && x.EpisodeNumber == 1 && x.AirDate == new DateOnly(2008, 1, 20));
 
         await _factory.TvShowService.Received(1)
             .GetSeasonEpisodesAsync(1396, 1, Arg.Any<CancellationToken>());
