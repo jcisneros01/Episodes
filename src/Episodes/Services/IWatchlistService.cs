@@ -1,4 +1,5 @@
 using Episodes.Data;
+using Episodes.Enums;
 using Episodes.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,7 +9,7 @@ public interface IWatchlistService
 {
     Task<IReadOnlyList<WatchlistItem>> GetWatchlistAsync(int userId, CancellationToken cancellationToken = default);
     
-    Task<WatchlistItem> AddShowAsync(int userId, int showId, CancellationToken cancellationToken = default);
+    Task<AddShowResult> AddShowAsync(int userId, int externalShowId, CancellationToken cancellationToken = default);
     
     Task RemoveShowAsync(int userId, int externalShowId, CancellationToken cancellationToken = default);
 }
@@ -35,12 +36,42 @@ public class WatchlistService : IWatchlistService
         return userShows;
     }
 
-    public Task<WatchlistItem> AddShowAsync(int userId, int showId, CancellationToken cancellationToken = default)
+    public async Task<AddShowResult> AddShowAsync(int userId, int externalShowId,
+        CancellationToken cancellationToken = default)
     {
-        // check 
-        throw new NotImplementedException();
-    }
+        var show = await _dbContext.Shows.FirstOrDefaultAsync(x => x.ExternalId == externalShowId,
+            cancellationToken: cancellationToken);
+        if (show == null)
+        {
+            return new AddShowResult { Error = AddShowError.ShowNotFound };
+        }
 
+        var alreadyAdded = await _dbContext.UserShows
+            .AnyAsync(x => x.UserId == userId && x.ShowId == show.Id,
+                cancellationToken: cancellationToken);
+        if (alreadyAdded)
+        {
+            return new AddShowResult { Error = AddShowError.AlreadyOnWatchlist };
+        }
+
+        var newUserShow = new UserShow
+        {
+            UserId = userId,
+            ShowId = show.Id,
+            Status = nameof(UserShowStatus.Current),
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        _dbContext.Add(newUserShow);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return new AddShowResult
+        {
+            Success = true,
+            Item = new WatchlistItem(externalShowId, show.Name, show.PosterImgLink, newUserShow.Status, newUserShow.CreatedAt)
+        };
+    }
+    
     public async Task RemoveShowAsync(int userId, int externalShowId, CancellationToken cancellationToken = default)
     {
         var show = await _dbContext.UserShows.FirstOrDefaultAsync(x => x.Show.ExternalId == externalShowId && x.UserId == userId, cancellationToken);

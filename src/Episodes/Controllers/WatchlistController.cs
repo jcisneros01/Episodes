@@ -1,4 +1,5 @@
 using Episodes.Data;
+using Episodes.Models;
 using Episodes.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -43,9 +44,14 @@ public sealed class WatchlistController : ControllerBase
             return Unauthorized();
         }
 
-        var watchList = await _watchlistService.AddShowAsync(userId.Value, showId, cancellationToken);
+        var result = await _watchlistService.AddShowAsync(userId.Value, showId, cancellationToken);
 
-        return Ok(watchList);
+        return result.Error switch
+        {
+            AddShowError.ShowNotFound => NotFound(),
+            AddShowError.AlreadyOnWatchlist => Conflict(),
+            _ => Ok(result.Item)
+        };
     }
 
     [HttpDelete("{showId:int}")]
