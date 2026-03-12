@@ -11,7 +11,10 @@ namespace Episodes.Tests.Helpers;
 
 public class EpisodesWebApplicationFactory : WebApplicationFactory<Program>
 {
+    public const int TestUserId = 1;
+
     public ITvShowService TvShowService { get; } = Substitute.For<ITvShowService>();
+    public IWatchlistService WatchlistService { get; } = Substitute.For<IWatchlistService>();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -31,6 +34,7 @@ public class EpisodesWebApplicationFactory : WebApplicationFactory<Program>
         builder.ConfigureTestServices(services =>
         {
             services.AddSingleton(TvShowService);
+            services.AddSingleton(WatchlistService);
 
             services.AddAuthentication("Test")
                 .AddScheme<AuthenticationSchemeOptions, FakeAuthHandler>("Test", _ => { });
@@ -54,7 +58,7 @@ public class EpisodesWebApplicationFactory : WebApplicationFactory<Program>
         {
             var identity = new ClaimsIdentity(
             [
-                new Claim(ClaimTypes.NameIdentifier, "test-user-id"),
+                new Claim(ClaimTypes.NameIdentifier, TestUserId.ToString()),
                 new Claim(ClaimTypes.Email, "test@example.com")
             ], "Test");
 

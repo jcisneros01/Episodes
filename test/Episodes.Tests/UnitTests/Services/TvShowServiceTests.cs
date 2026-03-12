@@ -2,6 +2,7 @@ using Episodes.Clients;
 using Episodes.Data;
 using Episodes.Services;
 using FluentAssertions;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using NUnit.Framework;
@@ -14,11 +15,16 @@ public class TvShowServiceTests
     [SetUp]
     public void SetUp()
     {
+        _connection = new SqliteConnection("DataSource=:memory:");
+        _connection.Open();
+        _connection.CreateFunction("now", () => DateTime.UtcNow.ToString("o"));
+
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .UseSqlite(_connection)
             .Options;
 
         _dbContext = new ApplicationDbContext(options);
+        _dbContext.Database.EnsureCreated();
         _dbContext.TvDataProviders.Add(new TvDataProvider { Id = 1, Name = "tmdb" });
         _dbContext.SaveChanges();
 
@@ -30,8 +36,10 @@ public class TvShowServiceTests
     public void TearDown()
     {
         _dbContext.Dispose();
+        _connection.Dispose();
     }
 
+    private SqliteConnection _connection;
     private ApplicationDbContext _dbContext;
     private ITmdbClient _client;
     private TvShowService _sut;
