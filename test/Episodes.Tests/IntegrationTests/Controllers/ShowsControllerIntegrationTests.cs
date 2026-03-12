@@ -88,7 +88,7 @@ public class ShowsControllerIntegrationTests
             Genres = ["Drama", "Crime"],
             Seasons =
             [
-                new TvSeasonSummary { Id = 3572, Name = "Season 1", SeasonNumber = 1, EpisodeCount = 7 }
+                new TvSeasonSummary { Name = "Season 1", SeasonNumber = 1, EpisodeCount = 7 }
             ]
         };
         _factory.TvShowService
@@ -115,7 +115,7 @@ public class ShowsControllerIntegrationTests
         response.Networks.Should().ContainSingle().Which.Should().Be("AMC");
         response.Genres.Should().BeEquivalentTo("Drama", "Crime");
         response.Seasons.Should().ContainSingle(x =>
-            x.Id == 3572 && x.Name == "Season 1" && x.SeasonNumber == 1 && x.EpisodeCount == 7);
+            x.Name == "Season 1" && x.SeasonNumber == 1 && x.EpisodeCount == 7);
 
         await _factory.TvShowService.Received(1)
             .GetTvShowAsync(1396, Arg.Any<CancellationToken>());

@@ -29,8 +29,6 @@ public class TvShowResponse
 
 public sealed class TvSeasonSummary
 {
-    public int Id { get; set; }
-
     public string? Name { get; set; } = string.Empty;
 
     public int SeasonNumber { get; set; }

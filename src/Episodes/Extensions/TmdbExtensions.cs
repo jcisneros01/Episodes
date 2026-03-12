@@ -40,11 +40,10 @@ public static class TmdbExtensions
             NumberOfEpisodes = tmdb.NumberOfEpisodes,
             Seasons = tmdb.Seasons.Select(x => new TvSeasonSummary
             {
-                Id = x.Id,
                 Name = x.Name,
                 SeasonNumber = x.SeasonNumber,
                 EpisodeCount = x.EpisodeCount
-            }).ToList()
+            }).OrderBy(x=> x.SeasonNumber).ToList()
         };
     }
 

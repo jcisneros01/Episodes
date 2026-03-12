@@ -9,7 +9,7 @@ public static class ShowExtensions
     {
         return new TvShowResponse
         {
-            Id = show.Id,
+            Id = show.ExternalId,
             Name = show.Name,
             PosterPath = show.PosterImgLink,
             Overview = show.Overview,
@@ -22,11 +22,10 @@ public static class ShowExtensions
             NumberOfEpisodes = show.NumberOfEpisodes,
             Seasons = show.Seasons.Select(x => new TvSeasonSummary
             {
-                Id = x.Id,
                 Name = x.Name,
                 SeasonNumber = x.SeasonNumber,
                 EpisodeCount = x.EpisodeCount
-            }).ToList()
+            }).OrderBy(x => x.SeasonNumber).ToList()
         };
     }
 }

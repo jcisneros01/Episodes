@@ -49,7 +49,28 @@ public class TvShowService : ITvShowService
         newShow.Genres = await GetGenres(tmdbTvDetailsResponse.Genres);
         newShow.Networks = await GetNetworks(tmdbTvDetailsResponse.Networks);
         _dbContext.Add(newShow);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException)
+        {
+            // concurrent request already cached this show — return from db
+            _dbContext.ChangeTracker.Clear();
+
+            var storedShow = await _dbContext.Shows
+                .Include(show => show.Networks)
+                .Include(show => show.Genres)
+                .Include(show => show.Seasons)
+                .FirstOrDefaultAsync(x => x.ExternalId == externalShowId, cancellationToken: cancellationToken);
+            if (storedShow != null)
+            {
+                return storedShow.ToTvShowResponse();
+            }
+
+            throw;
+        }
 
         return tmdbTvDetailsResponse.ToTvShowResponse();
     }

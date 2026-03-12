@@ -131,9 +131,9 @@ public class TvShowServiceTests
         result.Genres.Should().BeEquivalentTo("Drama", "Crime");
         result.Seasons.Should().HaveCount(2);
         result.Seasons[0].Should()
-            .BeEquivalentTo(new { Id = 3572, Name = "Season 1", SeasonNumber = 1, EpisodeCount = 7 });
+            .BeEquivalentTo(new { Name = "Season 1", SeasonNumber = 1, EpisodeCount = 7 });
         result.Seasons[1].Should()
-            .BeEquivalentTo(new { Id = 3573, Name = "Season 2", SeasonNumber = 2, EpisodeCount = 13 });
+            .BeEquivalentTo(new { Name = "Season 2", SeasonNumber = 2, EpisodeCount = 13 });
 
         await _client.Received(1).GetTvShowDetailsAsync(1396, Arg.Any<CancellationToken>());
     }
