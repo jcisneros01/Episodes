@@ -16,6 +16,8 @@ public class Season
 
     public string? PosterImgLink { get; set; }
 
+    public int EpisodeCount { get; set; }
+
     public int ExternalId { get; set; }
 
     public int DataProviderId { get; set; }

@@ -79,7 +79,7 @@ public class ShowsControllerTests
             Name = "Season 1",
             Overview = "The first season.",
             SeasonNumber = 1,
-            Episodes = [new Episode { Name = "Pilot", EpisodeNumber = 1 }]
+            Episodes = [new EpisodeResponse { Name = "Pilot", EpisodeNumber = 1 }]
         };
         _tvShowService.GetSeasonEpisodesAsync(1396, 1, Arg.Any<CancellationToken>())
             .Returns(expected);

@@ -12,7 +12,15 @@ public class Show
 
     public string Status { get; set; } = null!;
 
+    public string? Overview { get; set; }
+
     public string? PosterImgLink { get; set; }
+
+    public bool InProduction { get; set; }
+
+    public int NumberOfSeasons { get; set; }
+
+    public int NumberOfEpisodes { get; set; }
 
     public int ExternalId { get; set; }
 

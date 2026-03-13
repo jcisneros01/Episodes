@@ -1,13 +1,18 @@
 import { useState } from 'react'
 import { useSearch } from './hooks/useSearch'
+import { useWatchlist } from './hooks/useWatchlist'
 import { SearchBar } from './components/SearchBar'
 import { ShowGrid } from './components/ShowGrid'
 import { ShowDetail } from './components/ShowDetail'
+import { WatchlistPage } from './components/WatchlistPage'
 import { Pagination } from './components/Pagination'
 import { AuthScreen } from './components/AuthScreen'
 import { useAuth } from './context/AuthContext'
 
-type AppView = { view: 'search' } | { view: 'detail'; showId: number }
+type AppView =
+  | { view: 'search' }
+  | { view: 'watchlist' }
+  | { view: 'detail'; showId: number }
 
 function LoadingScreen() {
   return (
@@ -29,18 +34,31 @@ function AuthenticatedApp({
   onLogout: () => void
 }) {
   const { query, page, data, loading, error, handleQueryChange, handlePageChange } = useSearch()
+  const watchlist = useWatchlist()
   const [appView, setAppView] = useState<AppView>({ view: 'search' })
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
       <header className="border-b border-gray-800 bg-gray-900 px-6 py-4">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 lg:flex-row lg:items-center">
-          <h1
-            className="cursor-pointer text-xl font-bold tracking-tight text-indigo-400"
-            onClick={() => setAppView({ view: 'search' })}
-          >
-            Episodes
-          </h1>
+          <div className="flex items-center gap-4">
+            <h1
+              className="cursor-pointer text-xl font-bold tracking-tight text-indigo-400"
+              onClick={() => setAppView({ view: 'search' })}
+            >
+              Episodes
+            </h1>
+            <button
+              onClick={() => setAppView({ view: 'watchlist' })}
+              className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
+                appView.view === 'watchlist'
+                  ? 'bg-indigo-500/20 text-indigo-300'
+                  : 'text-gray-400 hover:text-indigo-300'
+              }`}
+            >
+              Watchlist
+            </button>
+          </div>
 
           {appView.view === 'search' && (
             <div className="min-w-0 flex-1">
@@ -66,7 +84,7 @@ function AuthenticatedApp({
       </header>
 
       <main className="mx-auto max-w-7xl space-y-6 px-6 py-8">
-        {appView.view === 'search' ? (
+        {appView.view === 'search' && (
           <>
             <ShowGrid
               data={data}
@@ -85,10 +103,25 @@ function AuthenticatedApp({
               />
             )}
           </>
-        ) : (
+        )}
+
+        {appView.view === 'watchlist' && (
+          <WatchlistPage
+            items={watchlist.items}
+            loading={watchlist.loading}
+            error={watchlist.error}
+            onShowClick={(showId) => setAppView({ view: 'detail', showId })}
+            onRemove={watchlist.remove}
+          />
+        )}
+
+        {appView.view === 'detail' && (
           <ShowDetail
             showId={appView.showId}
             onBack={() => setAppView({ view: 'search' })}
+            isOnWatchlist={watchlist.isOnWatchlist(appView.showId)}
+            onAddToWatchlist={watchlist.add}
+            onRemoveFromWatchlist={watchlist.remove}
           />
         )}
       </main>

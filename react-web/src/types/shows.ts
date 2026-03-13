@@ -52,3 +52,11 @@ export interface TvShowResponse {
   networks: string[]
   seasons: TvSeasonSummary[]
 }
+
+export interface WatchlistItem {
+  show_id: number
+  name: string
+  poster_img_link: string | null
+  status: string
+  added_at: string
+}

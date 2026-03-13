@@ -9,7 +9,19 @@
       "value": "http://localhost:5000"
     },
     {
+      "key": "email",
+      "value": "user@example.com"
+    },
+    {
+      "key": "password",
+      "value": "Password1!"
+    },
+    {
       "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "tv_show_id",
       "value": ""
     }
   ],
@@ -75,7 +87,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password1!\"\n}"
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/register",
@@ -113,7 +125,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password1!\"\n}"
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/login?useCookies=false",
@@ -189,6 +201,22 @@
       "item": [
         {
           "name": "Search Shows",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const json = pm.response.json();",
+                  "    if (json.results && json.results.length > 0) {",
+                  "        pm.collectionVariables.set('tv_show_id', json.results[0].id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "url": {
@@ -227,6 +255,44 @@
               "raw": "{{baseUrl}}/api/shows/1396/season/1",
               "host": ["{{baseUrl}}"],
               "path": ["api", "shows", "1396", "season", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Watchlist",
+      "item": [
+        {
+          "name": "Get Watchlist",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/watchlist",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "watchlist"]
+            }
+          }
+        },
+        {
+          "name": "Add Show to Watchlist",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/watchlist/{{tv_show_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "watchlist", "{{tv_show_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Remove Show from Watchlist",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/watchlist/{{tv_show_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "watchlist", "{{tv_show_id}}"]
             }
           }
         }

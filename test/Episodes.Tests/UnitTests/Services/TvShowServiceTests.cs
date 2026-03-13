@@ -1,6 +1,9 @@
 using Episodes.Clients;
+using Episodes.Data;
 using Episodes.Services;
 using FluentAssertions;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -12,10 +15,32 @@ public class TvShowServiceTests
     [SetUp]
     public void SetUp()
     {
+        _connection = new SqliteConnection("DataSource=:memory:");
+        _connection.Open();
+        _connection.CreateFunction("now", () => DateTime.UtcNow.ToString("o"));
+
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseSqlite(_connection)
+            .Options;
+
+        _dbContext = new ApplicationDbContext(options);
+        _dbContext.Database.EnsureCreated();
+        _dbContext.TvDataProviders.Add(new TvDataProvider { Id = 1, Name = "tmdb" });
+        _dbContext.SaveChanges();
+
         _client = Substitute.For<ITmdbClient>();
-        _sut = new TvShowService(_client);
+        _sut = new TvShowService(_client, _dbContext);
     }
 
+    [TearDown]
+    public void TearDown()
+    {
+        _dbContext.Dispose();
+        _connection.Dispose();
+    }
+
+    private SqliteConnection _connection;
+    private ApplicationDbContext _dbContext;
     private ITmdbClient _client;
     private TvShowService _sut;
 
@@ -105,7 +130,7 @@ public class TvShowServiceTests
         result.Name.Should().Be("Breaking Bad");
         result.PosterPath.Should().Be("/ggFHVNu6YYI5L9pCfOacjizRGt.jpg");
         result.Overview.Should().Be("Walter White's transformation");
-        result.FirstAirDate.Should().Be("2008-01-20");
+        result.FirstAirDate.Should().Be(new DateOnly(2008, 1, 20));
         result.InProduction.Should().BeFalse();
         result.Status.Should().Be("Ended");
         result.NumberOfEpisodes.Should().Be(62);
@@ -114,9 +139,9 @@ public class TvShowServiceTests
         result.Genres.Should().BeEquivalentTo("Drama", "Crime");
         result.Seasons.Should().HaveCount(2);
         result.Seasons[0].Should()
-            .BeEquivalentTo(new { Id = 3572, Name = "Season 1", SeasonNumber = 1, EpisodeCount = 7 });
+            .BeEquivalentTo(new { Name = "Season 1", SeasonNumber = 1, EpisodeCount = 7 });
         result.Seasons[1].Should()
-            .BeEquivalentTo(new { Id = 3573, Name = "Season 2", SeasonNumber = 2, EpisodeCount = 13 });
+            .BeEquivalentTo(new { Name = "Season 2", SeasonNumber = 2, EpisodeCount = 13 });
 
         await _client.Received(1).GetTvShowDetailsAsync(1396, Arg.Any<CancellationToken>());
     }
@@ -125,6 +150,19 @@ public class TvShowServiceTests
     public async Task GetSeasonEpisodesAsync_WhenSuccessful_ReturnsTvSeasonResponse()
     {
         // Arrange
+        _client.GetTvShowDetailsAsync(1396, Arg.Any<CancellationToken>())
+            .Returns(new TmdbTvDetailsResponse
+            {
+                Id = 1396,
+                Name = "Breaking Bad",
+                Status = "Ended",
+                Networks = [new TmdbNetwork { Id = 174, Name = "AMC" }],
+                Genres = [new TmdbGenre { Id = 18, Name = "Drama" }],
+                Seasons =
+                [
+                    new TmdbSeasonSummary { Id = 3572, Name = "Season 1", SeasonNumber = 1, EpisodeCount = 7 }
+                ]
+            });
         _client.GetTvShowSeasonDetailsAsync(1396, 1, Arg.Any<CancellationToken>())
             .Returns(new TmdbTvSeasonDetailsResponse
             {
@@ -162,14 +200,14 @@ public class TvShowServiceTests
         {
             Name = "Pilot",
             Overview = "Walter White begins his transformation.",
-            AirDate = "2008-01-20",
+            AirDate = (DateOnly?)new DateOnly(2008, 1, 20),
             EpisodeNumber = 1
         });
         result.Episodes[1].Should().BeEquivalentTo(new
         {
             Name = "Cat's in the Bag",
             Overview = "Walt and Jesse dispose of the bodies.",
-            AirDate = "2008-01-27",
+            AirDate = (DateOnly?)new DateOnly(2008, 1, 27),
             EpisodeNumber = 2
         });
 
