@@ -77,13 +77,13 @@ public class WatchlistServiceTests
         _dbContext.UserShows.AddRange(
             new UserShow
             {
-                UserId = 1, ShowId = show1.Id, Status = nameof(UserShowStatus.Current),
+                UserId = 1, ShowId = show1.Id, Status = UserShowStatus.Current,
                 CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                 UpdatedAt = DateTime.UtcNow
             },
             new UserShow
             {
-                UserId = 1, ShowId = show2.Id, Status = nameof(UserShowStatus.Current),
+                UserId = 1, ShowId = show2.Id, Status = UserShowStatus.Current,
                 CreatedAt = new DateTime(2024, 6, 1, 0, 0, 0, DateTimeKind.Utc),
                 UpdatedAt = DateTime.UtcNow
             }
@@ -120,12 +120,12 @@ public class WatchlistServiceTests
         _dbContext.UserShows.AddRange(
             new UserShow
             {
-                UserId = 1, ShowId = show.Id, Status = nameof(UserShowStatus.Current),
+                UserId = 1, ShowId = show.Id, Status = UserShowStatus.Current,
                 CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
             },
             new UserShow
             {
-                UserId = 2, ShowId = show.Id, Status = nameof(UserShowStatus.Current),
+                UserId = 2, ShowId = show.Id, Status = UserShowStatus.Current,
                 CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
             }
         );
@@ -149,13 +149,12 @@ public class WatchlistServiceTests
         var result = await _sut.AddShowAsync(1, 1396);
 
         // Assert
-        result.Success.Should().BeTrue();
         result.Error.Should().BeNull();
         result.Item.Should().NotBeNull();
         result.Item!.ShowId.Should().Be(1396);
         result.Item.Name.Should().Be("Breaking Bad");
         result.Item.PosterImgLink.Should().Be("/poster.jpg");
-        result.Item.Status.Should().Be(nameof(UserShowStatus.Current));
+        result.Item.Status.Should().Be(UserShowStatus.Current);
 
         var userShow = await _dbContext.UserShows.FirstOrDefaultAsync(x => x.UserId == 1 && x.ShowId == show.Id);
         userShow.Should().NotBeNull();
@@ -168,7 +167,6 @@ public class WatchlistServiceTests
         var result = await _sut.AddShowAsync(1, 9999);
 
         // Assert
-        result.Success.Should().BeFalse();
         result.Error.Should().Be(AddShowError.ShowNotFound);
         result.Item.Should().BeNull();
     }
@@ -180,7 +178,7 @@ public class WatchlistServiceTests
         var show = CreateShow(1396, "Breaking Bad");
         _dbContext.UserShows.Add(new UserShow
         {
-            UserId = 1, ShowId = show.Id, Status = nameof(UserShowStatus.Current),
+            UserId = 1, ShowId = show.Id, Status = UserShowStatus.Current,
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         });
         await _dbContext.SaveChangesAsync();
@@ -189,7 +187,6 @@ public class WatchlistServiceTests
         var result = await _sut.AddShowAsync(1, 1396);
 
         // Assert
-        result.Success.Should().BeFalse();
         result.Error.Should().Be(AddShowError.AlreadyOnWatchlist);
         result.Item.Should().BeNull();
     }
@@ -201,7 +198,7 @@ public class WatchlistServiceTests
         var show = CreateShow(1396, "Breaking Bad");
         _dbContext.UserShows.Add(new UserShow
         {
-            UserId = 1, ShowId = show.Id, Status = nameof(UserShowStatus.Current),
+            UserId = 1, ShowId = show.Id, Status = UserShowStatus.Current,
             CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
         });
         await _dbContext.SaveChangesAsync();

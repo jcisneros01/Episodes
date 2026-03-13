@@ -119,6 +119,17 @@ public class TvShowService : ITvShowService
             .FirstOrDefaultAsync(x => x.Show.ExternalId == externaltvShowId && x.SeasonNumber == seasonNumber,
                 cancellationToken: cancellationToken);
 
+        // show not cached yet — cache it so we have the season to attach episodes to
+        if (season == null)
+        {
+            await GetTvShowAsync(externaltvShowId, cancellationToken);
+            season = await _dbContext.Seasons
+                .Include(x => x.Episodes)
+                .Include(x => x.Show)
+                .FirstOrDefaultAsync(x => x.Show.ExternalId == externaltvShowId && x.SeasonNumber == seasonNumber,
+                    cancellationToken: cancellationToken);
+        }
+
         // return cached episodes
         if (season != null && season.Episodes.Count != 0)
         {
@@ -129,24 +140,26 @@ public class TvShowService : ITvShowService
         var tvSeasonDetailsResponse =
             await _client.GetTvShowSeasonDetailsAsync(externaltvShowId, seasonNumber, cancellationToken);
 
-        // cache episodes from tv data provider
-        if (season != null)
-        {
-            var existingEpisodeExternalIds = season.Episodes.Select(e => e.ExternalId).ToHashSet();
-
-            var newEpisodes = tvSeasonDetailsResponse.Episodes
-                .Where(x => !existingEpisodeExternalIds.Contains(x.Id))
-                .Select(x =>
-                {
-                    var episode = x.ToEpisode();
-                    episode.SeasonId = season.Id;
-                    return episode;
-                }).ToList();
-
-            _dbContext.Episodes.AddRange(newEpisodes);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-        }
+        await CacheNewEpisodes(tvSeasonDetailsResponse, season, cancellationToken);
 
         return tvSeasonDetailsResponse.ToTvSeasonResponse();
+    }
+
+    private async Task CacheNewEpisodes(TmdbTvSeasonDetailsResponse tvSeasonDetailsResponse, Season? season,
+        CancellationToken cancellationToken)
+    {
+        var existingEpisodeExternalIds = season!.Episodes.Select(e => e.ExternalId).ToHashSet();
+
+        var newEpisodes = tvSeasonDetailsResponse.Episodes
+            .Where(x => !existingEpisodeExternalIds.Contains(x.Id))
+            .Select(x =>
+            {
+                var episode = x.ToEpisode();
+                episode.SeasonId = season.Id;
+                return episode;
+            }).ToList();
+
+        _dbContext.Episodes.AddRange(newEpisodes);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

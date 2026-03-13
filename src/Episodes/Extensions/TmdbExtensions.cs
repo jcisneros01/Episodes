@@ -1,4 +1,5 @@
 using Episodes.Clients;
+using Episodes.Config;
 using Episodes.Data;
 using Episodes.Models;
 
@@ -79,7 +80,7 @@ public static class TmdbExtensions
             NumberOfSeasons = tmdb.NumberOfSeasons,
             NumberOfEpisodes = tmdb.NumberOfEpisodes,
             ExternalId = tmdb.Id,
-            DataProviderId = 1,
+            DataProviderId = DataProviders.Tmdb,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             Seasons = tmdb.Seasons.Select(s => s.ToSeason()).ToList()
@@ -97,7 +98,7 @@ public static class TmdbExtensions
             PosterImgLink = tmdb.PosterPath,
             EpisodeCount = tmdb.EpisodeCount,
             ExternalId = tmdb.Id,
-            DataProviderId = 1,
+            DataProviderId = DataProviders.Tmdb,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
         };
@@ -112,7 +113,7 @@ public static class TmdbExtensions
             Name = tmdb.Name,
             Overview = tmdb.Overview,
             ExternalId = tmdb.Id,
-            DataProviderId = 1,
+            DataProviderId = DataProviders.Tmdb,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
         };

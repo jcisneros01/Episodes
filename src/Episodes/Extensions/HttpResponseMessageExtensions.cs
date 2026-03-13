@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Episodes.Extensions;
 
@@ -7,7 +8,8 @@ public static class HttpResponseMessageExtensions
     private static readonly JsonSerializerOptions SnakeCaseOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-        PropertyNameCaseInsensitive = true
+        PropertyNameCaseInsensitive = true,
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) }
     };
 
     public static async Task<T> DeserializeJsonAsync<T>(

@@ -1,4 +1,5 @@
 using System.Net;
+using Episodes.Enums;
 using Episodes.Extensions;
 using Episodes.Models;
 using Episodes.Tests.Helpers;
@@ -34,8 +35,8 @@ public class WatchlistControllerIntegrationTests
         // Arrange
         var serviceResponse = new List<WatchlistItem>
         {
-            new(1396, "Breaking Bad", "/poster.jpg", "Current", new DateTime(2024, 1, 15, 0, 0, 0, DateTimeKind.Utc)),
-            new(1399, "Game of Thrones", "/got.jpg", "Current",
+            new(1396, "Breaking Bad", "/poster.jpg", UserShowStatus.Current, new DateTime(2024, 1, 15, 0, 0, 0, DateTimeKind.Utc)),
+            new(1399, "Game of Thrones", "/got.jpg", UserShowStatus.Current,
                 new DateTime(2024, 2, 20, 0, 0, 0, DateTimeKind.Utc))
         };
         _factory.WatchlistService
@@ -64,10 +65,10 @@ public class WatchlistControllerIntegrationTests
     {
         // Arrange
         var watchlistItem =
-            new WatchlistItem(1396, "Breaking Bad", "/poster.jpg", "Current", DateTime.UtcNow);
+            new WatchlistItem(1396, "Breaking Bad", "/poster.jpg", UserShowStatus.Current, DateTime.UtcNow);
         _factory.WatchlistService
             .AddShowAsync(EpisodesWebApplicationFactory.TestUserId, 1396, Arg.Any<CancellationToken>())
-            .Returns(new AddShowResult { Success = true, Item = watchlistItem });
+            .Returns(new AddShowResult { Item = watchlistItem });
 
         // Act
         var responseMessage = await _client.PostAsync("/api/watchlist/1396", null);

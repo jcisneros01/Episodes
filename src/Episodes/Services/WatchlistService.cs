@@ -49,7 +49,7 @@ public class WatchlistService : IWatchlistService
         {
             UserId = userId,
             ShowId = show.Id,
-            Status = nameof(UserShowStatus.Current),
+            Status = UserShowStatus.Current,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -58,7 +58,6 @@ public class WatchlistService : IWatchlistService
 
         return new AddShowResult
         {
-            Success = true,
             Item = new WatchlistItem(externalShowId, show.Name, show.PosterImgLink, newUserShow.Status, newUserShow.CreatedAt)
         };
     }

@@ -1,4 +1,6 @@
-﻿namespace Episodes.Data;
+﻿using Episodes.Enums;
+
+namespace Episodes.Data;
 
 public class UserShow
 {
@@ -6,7 +8,7 @@ public class UserShow
 
     public int ShowId { get; set; }
 
-    public string Status { get; set; } = null!;
+    public UserShowStatus Status { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

@@ -150,6 +150,19 @@ public class TvShowServiceTests
     public async Task GetSeasonEpisodesAsync_WhenSuccessful_ReturnsTvSeasonResponse()
     {
         // Arrange
+        _client.GetTvShowDetailsAsync(1396, Arg.Any<CancellationToken>())
+            .Returns(new TmdbTvDetailsResponse
+            {
+                Id = 1396,
+                Name = "Breaking Bad",
+                Status = "Ended",
+                Networks = [new TmdbNetwork { Id = 174, Name = "AMC" }],
+                Genres = [new TmdbGenre { Id = 18, Name = "Drama" }],
+                Seasons =
+                [
+                    new TmdbSeasonSummary { Id = 3572, Name = "Season 1", SeasonNumber = 1, EpisodeCount = 7 }
+                ]
+            });
         _client.GetTvShowSeasonDetailsAsync(1396, 1, Arg.Any<CancellationToken>())
             .Returns(new TmdbTvSeasonDetailsResponse
             {

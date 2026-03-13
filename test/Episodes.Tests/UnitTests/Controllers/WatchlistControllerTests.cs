@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Episodes.Controllers;
 using Episodes.Data;
+using Episodes.Enums;
 using Episodes.Models;
 using Episodes.Services;
 using FluentAssertions;
@@ -60,7 +61,7 @@ public class WatchlistControllerTests
         SetUserId("1");
         var expected = new List<WatchlistItem>
         {
-            new(1396, "Breaking Bad", "/poster.jpg", "Current", DateTime.UtcNow)
+            new(1396, "Breaking Bad", "/poster.jpg", UserShowStatus.Current, DateTime.UtcNow)
         };
         _watchlistService.GetWatchlistAsync(1, Arg.Any<CancellationToken>())
             .Returns(expected);
@@ -96,8 +97,7 @@ public class WatchlistControllerTests
         SetUserId("1");
         var expected = new AddShowResult
         {
-            Success = true,
-            Item = new WatchlistItem(1396, "Breaking Bad", "/poster.jpg", "Current", DateTime.UtcNow)
+            Item = new WatchlistItem(1396, "Breaking Bad", "/poster.jpg", UserShowStatus.Current, DateTime.UtcNow)
         };
         _watchlistService.AddShowAsync(1, 1396, Arg.Any<CancellationToken>())
             .Returns(expected);
