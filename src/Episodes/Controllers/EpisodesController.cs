@@ -1,0 +1,74 @@
+using Episodes.Data;
+using Episodes.Models;
+using Episodes.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Episodes.Controllers;
+
+[ApiController]
+[Authorize]
+[Route("api/episodes/{episodeId:int}")]
+public class EpisodesController : ControllerBase
+{
+    private readonly IWatchedEpisodesService _watchedEpisodesService;
+    private readonly UserManager<ApplicationUser> _userManager;
+
+    public EpisodesController(IWatchedEpisodesService watchedEpisodesService, UserManager<ApplicationUser> userManager)
+    {
+        _watchedEpisodesService = watchedEpisodesService;
+        _userManager = userManager;
+    }
+
+    [HttpPost("watched")] 
+    public async Task<IActionResult> MarkEpisodeWatched(int episodeId, CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+
+        var result = await _watchedEpisodesService.MarkEpisodeAsWatched(userId.Value, episodeId, cancellationToken);
+        if (result.Error != null)
+        {
+            return result.Error switch
+            {
+                MarkEpisodeWatchedError.EpisodeNotFound => NotFound(),
+                MarkEpisodeWatchedError.AlreadyWatched => Conflict(),
+                _ => StatusCode(500)
+            };
+        }
+
+        return NoContent();
+    }
+
+    [HttpDelete("watched")] 
+    public async Task<IActionResult> MarkEpisodeUnwatched(int episodeId, CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+        
+        var result = await _watchedEpisodesService.UnmarkEpisodeAsWatched(userId.Value, episodeId, cancellationToken);
+        if (result.Error != null)
+        {
+            return result.Error switch
+            {
+                UnmarkEpisodeWatchedError.EpisodeNotWatched => NotFound(),
+                _ => StatusCode(500)
+            };
+        }
+
+        return NoContent();
+    }
+    
+    private int? GetUserId()
+    {
+        var userIdString = _userManager.GetUserId(User);
+        return int.TryParse(userIdString, out var userId) ? userId : null;
+    }
+}
