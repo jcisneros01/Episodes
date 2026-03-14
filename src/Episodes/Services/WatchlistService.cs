@@ -22,15 +22,15 @@ public class WatchlistService : IWatchlistService
         var userShows = await _dbContext.UserShows
             .Where(x => x.UserId == userId)
             .OrderByDescending(x => x.CreatedAt)
-            .Select(x => new WatchlistItem(x.Show.ExternalId, x.Show.Name, x.Show.PosterImgLink, x.Status, x.CreatedAt))
+            .Select(x => new WatchlistItem(x.Show.Id, x.Show.Name, x.Show.PosterImgLink, x.Status, x.CreatedAt))
             .ToListAsync(cancellationToken: cancellationToken);
         return userShows;
     }
 
-    public async Task<AddShowResult> AddShowAsync(int userId, int externalShowId,
+    public async Task<AddShowResult> AddShowAsync(int userId, int showId,
         CancellationToken cancellationToken = default)
     {
-        var show = await _dbContext.Shows.FirstOrDefaultAsync(x => x.ExternalId == externalShowId,
+        var show = await _dbContext.Shows.FirstOrDefaultAsync(x => x.Id == showId,
             cancellationToken: cancellationToken);
         if (show == null)
         {
@@ -58,16 +58,16 @@ public class WatchlistService : IWatchlistService
 
         return new AddShowResult
         {
-            Item = new WatchlistItem(externalShowId, show.Name, show.PosterImgLink, newUserShow.Status, newUserShow.CreatedAt)
+            Item = new WatchlistItem(show.Id, show.Name, show.PosterImgLink, newUserShow.Status, newUserShow.CreatedAt)
         };
     }
     
-    public async Task RemoveShowAsync(int userId, int externalShowId, CancellationToken cancellationToken = default)
+    public async Task RemoveShowAsync(int userId, int showId, CancellationToken cancellationToken = default)
     {
-        var watchedShow = await _dbContext.UserShows.FirstOrDefaultAsync(x => x.Show.ExternalId == externalShowId && x.UserId == userId, cancellationToken);
+        var watchedShow = await _dbContext.UserShows.FirstOrDefaultAsync(x => x.ShowId == showId && x.UserId == userId, cancellationToken);
         if (watchedShow == null)
         {
-            _logger.LogWarning("Unable to remove show {ShowId} for user {userId}. Show was not found", externalShowId, userId);
+            _logger.LogWarning("Unable to remove show {ShowId} for user {userId}. Show was not found", showId, userId);
             return;
         }
 

@@ -24,30 +24,6 @@ public static class TmdbExtensions
         };
     }
 
-    public static TvShowResponse ToTvShowResponse(this TmdbTvDetailsResponse tmdb)
-    {
-        return new TvShowResponse
-        {
-            Id = tmdb.Id,
-            Name = tmdb.Name,
-            PosterPath = tmdb.PosterPath,
-            Overview = tmdb.Overview,
-            FirstAirDate = DateOnly.TryParse(tmdb.FirstAirDate, out var date) ? date : null,
-            InProduction = tmdb.InProduction,
-            Networks = tmdb.Networks.Select(x => x.Name).ToList(),
-            Genres = tmdb.Genres.Select(x => x.Name).ToList(),
-            Status = tmdb.Status,
-            NumberOfSeasons = tmdb.NumberOfSeasons,
-            NumberOfEpisodes = tmdb.NumberOfEpisodes,
-            Seasons = tmdb.Seasons.Select(x => new TvSeasonSummary
-            {
-                Name = x.Name,
-                SeasonNumber = x.SeasonNumber,
-                EpisodeCount = x.EpisodeCount
-            }).OrderBy(x=> x.SeasonNumber).ToList()
-        };
-    }
-
     public static Show ToShow(this TmdbTvDetailsResponse tmdb)
     {
         return new Show

@@ -32,15 +32,27 @@ public class ShowsController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("{tvShowId:int}")]
-    public async Task<IActionResult> GetTvShow(int tvShowId, CancellationToken cancellationToken = default)
+    [HttpGet("{showId:int}")]
+    public async Task<IActionResult> GetTvShow(int showId, CancellationToken cancellationToken = default)
     {
-        var result = await _tvShowService.GetTvShowAsync(tvShowId, cancellationToken);
+        var result = await _tvShowService.GetTvShowAsync(showId, cancellationToken);
+        if (result == null)
+        {
+            return NotFound();
+        }
+
         return Ok(result);
     }
 
-    [HttpGet("{tvShowId:int}/season/{seasonNumber:int}")]
-    public async Task<IActionResult> GetSeasonEpisodes(int tvShowId, int seasonNumber,
+    [HttpGet("external/{externalId:int}")]
+    public async Task<IActionResult> GetTvShowByExternalId(int externalId, CancellationToken cancellationToken = default)
+    {
+        var result = await _tvShowService.GetTvShowByExternalIdAsync(externalId, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("{showId:int}/season/{seasonNumber:int}")]
+    public async Task<IActionResult> GetSeasonEpisodes(int showId, int seasonNumber,
         CancellationToken cancellationToken = default)
     {
         var userId = GetUserId();
@@ -49,7 +61,7 @@ public class ShowsController : ControllerBase
             return Unauthorized();
         }
 
-        var result = await _tvShowService.GetSeasonEpisodesAsync(userId, tvShowId, seasonNumber, cancellationToken);
+        var result = await _tvShowService.GetSeasonEpisodesAsync(userId, showId, seasonNumber, cancellationToken);
         return Ok(result);
     }
     

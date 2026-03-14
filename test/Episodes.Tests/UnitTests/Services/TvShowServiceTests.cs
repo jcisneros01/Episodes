@@ -123,10 +123,10 @@ public class TvShowServiceTests
             });
 
         // Act
-        var result = await _sut.GetTvShowAsync(1396, CancellationToken.None);
+        var result = await _sut.GetTvShowByExternalIdAsync(1396, CancellationToken.None);
 
         // Assert
-        result.Id.Should().Be(1396);
+        result.Id.Should().BeGreaterThan(0);
         result.Name.Should().Be("Breaking Bad");
         result.PosterPath.Should().Be("/ggFHVNu6YYI5L9pCfOacjizRGt.jpg");
         result.Overview.Should().Be("Walter White's transformation");
@@ -188,8 +188,11 @@ public class TvShowServiceTests
                 ]
             });
 
+        // First cache the show to get the internal ID
+        var show = await _sut.GetTvShowByExternalIdAsync(1396, CancellationToken.None);
+
         // Act
-        var result = await _sut.GetSeasonEpisodesAsync(null, 1396, 1, CancellationToken.None);
+        var result = await _sut.GetSeasonEpisodesAsync(null, show.Id, 1, CancellationToken.None);
 
         // Assert
         result.Name.Should().Be("Season 1");

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getShow } from '../api/shows'
+import { getShow, getShowByExternalId } from '../api/shows'
 import type { TvShowResponse } from '../types/shows'
 
 interface ShowDetailState {
@@ -8,7 +8,7 @@ interface ShowDetailState {
   error: string | null
 }
 
-export function useShowDetail(showId: number) {
+export function useShowDetail(showId: number, idType: 'internal' | 'external') {
   const [state, setState] = useState<ShowDetailState>({
     show: null,
     loading: true,
@@ -20,7 +20,8 @@ export function useShowDetail(showId: number) {
 
     setState({ show: null, loading: true, error: null })
 
-    getShow(showId, controller.signal)
+    const fetchShow = idType === 'external' ? getShowByExternalId : getShow
+    fetchShow(showId, controller.signal)
       .then((show) => {
         setState({ show, loading: false, error: null })
       })
@@ -31,7 +32,7 @@ export function useShowDetail(showId: number) {
       })
 
     return () => controller.abort()
-  }, [showId])
+  }, [showId, idType])
 
   return state
 }

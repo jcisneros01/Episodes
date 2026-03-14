@@ -27,7 +27,7 @@ export function useWatchlist() {
 
   const add = useCallback(async (showId: number) => {
     const item = await addToWatchlist(showId)
-    setItems((prev) => [item, ...prev.filter((i) => i.show_id !== showId)])
+    setItems((prev) => [item, ...prev.filter((i) => i.show_id !== item.show_id)])
     return item
   }, [])
 

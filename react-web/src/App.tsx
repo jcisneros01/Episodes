@@ -12,7 +12,7 @@ import { useAuth } from './context/AuthContext'
 type AppView =
   | { view: 'search' }
   | { view: 'watchlist' }
-  | { view: 'detail'; showId: number }
+  | { view: 'detail'; showId: number; idType: 'internal' | 'external' }
 
 function LoadingScreen() {
   return (
@@ -91,7 +91,7 @@ function AuthenticatedApp({
               loading={loading}
               error={error}
               query={query}
-              onShowClick={(showId) => setAppView({ view: 'detail', showId })}
+              onShowClick={(showId) => setAppView({ view: 'detail', showId, idType: 'external' })}
             />
 
             {data && (
@@ -110,7 +110,7 @@ function AuthenticatedApp({
             items={watchlist.items}
             loading={watchlist.loading}
             error={watchlist.error}
-            onShowClick={(showId) => setAppView({ view: 'detail', showId })}
+            onShowClick={(showId) => setAppView({ view: 'detail', showId, idType: 'internal' })}
             onRemove={watchlist.remove}
           />
         )}
@@ -118,8 +118,9 @@ function AuthenticatedApp({
         {appView.view === 'detail' && (
           <ShowDetail
             showId={appView.showId}
+            idType={appView.idType}
             onBack={() => setAppView({ view: 'search' })}
-            isOnWatchlist={watchlist.isOnWatchlist(appView.showId)}
+            isOnWatchlist={watchlist.isOnWatchlist}
             onAddToWatchlist={watchlist.add}
             onRemoveFromWatchlist={watchlist.remove}
           />
