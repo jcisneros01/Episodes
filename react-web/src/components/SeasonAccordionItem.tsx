@@ -6,9 +6,10 @@ import type { Episode, TvSeasonSummary } from '../types/shows'
 interface SeasonAccordionItemProps {
   tvShowId: number
   season: TvSeasonSummary
+  isOnWatchlist: boolean
 }
 
-function EpisodeItem({ episode, onToggle }: { episode: Episode; onToggle: (id: number) => void }) {
+function EpisodeItem({ episode, onToggle, showWatchButton }: { episode: Episode; onToggle: (id: number) => void; showWatchButton: boolean }) {
   const [toggling, setToggling] = useState(false)
 
   async function handleToggle() {
@@ -39,18 +40,20 @@ function EpisodeItem({ episode, onToggle }: { episode: Episode; onToggle: (id: n
           </div>
           {episode.overview && <p className="mt-2 text-sm leading-6 text-gray-400">{episode.overview}</p>}
         </div>
-        <button
-          type="button"
-          onClick={handleToggle}
-          disabled={toggling}
-          className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition ${
-            episode.is_watched
-              ? 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30'
-              : 'bg-gray-700 text-gray-400 hover:bg-gray-600 hover:text-gray-200'
-          } disabled:opacity-50`}
-        >
-          {toggling ? '...' : episode.is_watched ? 'Watched' : 'Mark watched'}
-        </button>
+        {showWatchButton && (
+          <button
+            type="button"
+            onClick={handleToggle}
+            disabled={toggling}
+            className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+              episode.is_watched
+                ? 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30'
+                : 'bg-gray-700 text-gray-400 hover:bg-gray-600 hover:text-gray-200'
+            } disabled:opacity-50`}
+          >
+            {toggling ? '...' : episode.is_watched ? 'Watched' : 'Mark watched'}
+          </button>
+        )}
       </div>
     </div>
   )
@@ -59,9 +62,11 @@ function EpisodeItem({ episode, onToggle }: { episode: Episode; onToggle: (id: n
 function EpisodeList({
   episodes,
   onToggle,
+  showWatchButtons,
 }: {
   episodes: Episode[]
   onToggle: (id: number) => void
+  showWatchButtons: boolean
 }) {
   if (episodes.length === 0) {
     return <p className="text-sm text-gray-400">No episodes returned for this season.</p>
@@ -70,13 +75,13 @@ function EpisodeList({
   return (
     <div className="space-y-3">
       {episodes.map((episode) => (
-        <EpisodeItem key={episode.id} episode={episode} onToggle={onToggle} />
+        <EpisodeItem key={episode.id} episode={episode} onToggle={onToggle} showWatchButton={showWatchButtons} />
       ))}
     </div>
   )
 }
 
-export function SeasonAccordionItem({ tvShowId, season }: SeasonAccordionItemProps) {
+export function SeasonAccordionItem({ tvShowId, season, isOnWatchlist }: SeasonAccordionItemProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [episodes, setEpisodes] = useState<Episode[] | null>(null)
@@ -129,7 +134,7 @@ export function SeasonAccordionItem({ tvShowId, season }: SeasonAccordionItemPro
           <p className="mt-1 text-sm text-gray-400">
             {season.episode_count} episode{season.episode_count === 1 ? '' : 's'}
             {season.air_date ? ` • ${season.air_date}` : ''}
-            {episodes && totalCount > 0 && (
+            {isOnWatchlist && episodes && totalCount > 0 && (
               <span className="ml-2 text-indigo-400">
                 {watchedCount}/{totalCount} watched
               </span>
@@ -153,7 +158,7 @@ export function SeasonAccordionItem({ tvShowId, season }: SeasonAccordionItemPro
           {season.overview && <p className="text-sm leading-6 text-gray-400">{season.overview}</p>}
           {loading && <p className="text-sm text-gray-400">Loading episodes...</p>}
           {error && <p className="text-sm text-red-300">{error}</p>}
-          {episodes && <EpisodeList episodes={episodes} onToggle={handleEpisodeToggle} />}
+          {episodes && <EpisodeList episodes={episodes} onToggle={handleEpisodeToggle} showWatchButtons={isOnWatchlist} />}
         </div>
       )}
     </section>

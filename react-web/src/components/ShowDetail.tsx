@@ -179,7 +179,7 @@ export function ShowDetail({ showId, idType, onBack, isOnWatchlist, onAddToWatch
               <h3 className="text-xl font-semibold text-gray-100">Seasons</h3>
               <div className="space-y-3">
                 {show.seasons.map((season) => (
-                  <SeasonAccordionItem key={season.id} tvShowId={show.id} season={season} />
+                  <SeasonAccordionItem key={season.id} tvShowId={show.id} season={season} isOnWatchlist={isOnWatchlist(show.id)} />
                 ))}
               </div>
             </div>
