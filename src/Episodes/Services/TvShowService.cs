@@ -139,10 +139,10 @@ public class TvShowService : ITvShowService
         // get episodes from tv data provider
         var tvSeasonDetailsResponse =
             await _client.GetTvShowSeasonDetailsAsync(externaltvShowId, seasonNumber, cancellationToken);
-
+        
         await CacheNewEpisodes(tvSeasonDetailsResponse, season, cancellationToken);
 
-        return tvSeasonDetailsResponse.ToTvSeasonResponse();
+        return season!.ToTvSeasonResponse();
     }
 
     private async Task CacheNewEpisodes(TmdbTvSeasonDetailsResponse tvSeasonDetailsResponse, Season? season,
@@ -159,7 +159,9 @@ public class TvShowService : ITvShowService
                 return episode;
             }).ToList();
 
-        _dbContext.Episodes.AddRange(newEpisodes);
+        foreach (var episode in newEpisodes)
+            season.Episodes.Add(episode);
+
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

@@ -48,24 +48,6 @@ public static class TmdbExtensions
         };
     }
 
-    public static TvSeasonResponse ToTvSeasonResponse(this TmdbTvSeasonDetailsResponse tmdb)
-    {
-        return new TvSeasonResponse
-        {
-            Name = tmdb.Name,
-            Overview = tmdb.Overview,
-            SeasonNumber = tmdb.SeasonNumber,
-            EpisodeCount = tmdb.Episodes.Count,
-            Episodes = tmdb.Episodes.Select(x => new EpisodeResponse
-            {
-                Name = x.Name,
-                Overview = x.Overview,
-                AirDate = DateOnly.TryParse(x.AirDate, out var airDate) ? airDate : null,
-                EpisodeNumber = x.EpisodeNumber
-            }).ToList()
-        };
-    }
-
     public static Show ToShow(this TmdbTvDetailsResponse tmdb)
     {
         return new Show
