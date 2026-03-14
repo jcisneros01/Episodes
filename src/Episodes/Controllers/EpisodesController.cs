@@ -35,6 +35,8 @@ public class EpisodesController : ControllerBase
         {
             return result.Error switch
             {
+                MarkEpisodeWatchedError.ShowNotInWatchlist => UnprocessableEntity(new
+                    { message = "Show must be in your watchlist before marking episodes as watched." }),
                 MarkEpisodeWatchedError.EpisodeNotFound => NotFound(),
                 MarkEpisodeWatchedError.AlreadyWatched => Conflict(),
                 _ => StatusCode(500)

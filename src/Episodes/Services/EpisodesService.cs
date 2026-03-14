@@ -20,11 +20,19 @@ public class EpisodesService : IEpisodesService
     {
         try
         {
-            var episodeExists = await _dbContext.Episodes
-                .AnyAsync(e => e.Id == episodeId, cancellationToken);
-            if (!episodeExists)
+            var episode = await _dbContext.Episodes
+                .Include(e => e.Season)
+                .FirstOrDefaultAsync(e => e.Id == episodeId, cancellationToken);
+            if (episode == null)
             {
                 return new MarkEpisodeWatchedResult { Error = MarkEpisodeWatchedError.EpisodeNotFound };
+            }
+
+            var isShowOnWatchlist = await _dbContext.UserShows
+                .AnyAsync(us => us.UserId == userId && us.ShowId == episode.Season.ShowId, cancellationToken);
+            if (!isShowOnWatchlist)
+            {
+                return new MarkEpisodeWatchedResult { Error = MarkEpisodeWatchedError.ShowNotInWatchlist };
             }
 
             var alreadyWatched = await _dbContext.WatchedEpisodes
@@ -45,7 +53,7 @@ public class EpisodesService : IEpisodesService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to mark episode {EpisodeId} as watched for user {UserId}", episodeId, userId);
-            
+
             throw;
         }
 

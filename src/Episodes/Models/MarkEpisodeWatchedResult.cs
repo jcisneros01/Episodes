@@ -8,5 +8,6 @@ public record MarkEpisodeWatchedResult
 public enum MarkEpisodeWatchedError
 {
     EpisodeNotFound,
-    AlreadyWatched
+    AlreadyWatched,
+    ShowNotInWatchlist
 }
