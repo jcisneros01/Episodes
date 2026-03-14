@@ -64,14 +64,20 @@ public class WatchlistService : IWatchlistService
     
     public async Task RemoveShowAsync(int userId, int externalShowId, CancellationToken cancellationToken = default)
     {
-        var show = await _dbContext.UserShows.FirstOrDefaultAsync(x => x.Show.ExternalId == externalShowId && x.UserId == userId, cancellationToken);
-        if (show == null)
+        var watchedShow = await _dbContext.UserShows.FirstOrDefaultAsync(x => x.Show.ExternalId == externalShowId && x.UserId == userId, cancellationToken);
+        if (watchedShow == null)
         {
             _logger.LogWarning("Unable to remove show {ShowId} for user {userId}. Show was not found", externalShowId, userId);
             return;
         }
 
-        _dbContext.Remove(show);
+        var watchedEpisodes = await _dbContext.WatchedEpisodes
+            .Where(w => w.UserId == userId)
+            .Where(w => w.Episode.Season.ShowId == watchedShow.ShowId)
+            .ToListAsync(cancellationToken);
+
+        _dbContext.WatchedEpisodes.RemoveRange(watchedEpisodes);
+        _dbContext.Remove(watchedShow);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }
