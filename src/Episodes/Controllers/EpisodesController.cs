@@ -12,12 +12,12 @@ namespace Episodes.Controllers;
 [Route("api/episodes/{episodeId:int}")]
 public class EpisodesController : ControllerBase
 {
-    private readonly IWatchedEpisodesService _watchedEpisodesService;
+    private readonly IEpisodesService _episodesService;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public EpisodesController(IWatchedEpisodesService watchedEpisodesService, UserManager<ApplicationUser> userManager)
+    public EpisodesController(IEpisodesService episodesService, UserManager<ApplicationUser> userManager)
     {
-        _watchedEpisodesService = watchedEpisodesService;
+        _episodesService = episodesService;
         _userManager = userManager;
     }
 
@@ -30,7 +30,7 @@ public class EpisodesController : ControllerBase
             return Unauthorized();
         }
 
-        var result = await _watchedEpisodesService.MarkEpisodeAsWatched(userId.Value, episodeId, cancellationToken);
+        var result = await _episodesService.MarkEpisodeAsWatched(userId.Value, episodeId, cancellationToken);
         if (result.Error != null)
         {
             return result.Error switch
@@ -53,7 +53,7 @@ public class EpisodesController : ControllerBase
             return Unauthorized();
         }
         
-        var result = await _watchedEpisodesService.UnmarkEpisodeAsWatched(userId.Value, episodeId, cancellationToken);
+        var result = await _episodesService.UnmarkEpisodeAsWatched(userId.Value, episodeId, cancellationToken);
         if (result.Error != null)
         {
             return result.Error switch

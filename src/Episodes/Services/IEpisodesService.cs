@@ -2,7 +2,7 @@ using Episodes.Models;
 
 namespace Episodes.Services;
 
-public interface IWatchedEpisodesService
+public interface IEpisodesService
 {
     Task<MarkEpisodeWatchedResult> MarkEpisodeAsWatched(int userId, int episodeId, CancellationToken cancellationToken);
     

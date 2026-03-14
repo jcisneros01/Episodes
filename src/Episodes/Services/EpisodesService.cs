@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Episodes.Services;
 
-public class WatchedEpisodesService : IWatchedEpisodesService
+public class EpisodesService : IEpisodesService
 {
     private readonly ApplicationDbContext _dbContext;
-    private readonly ILogger<WatchedEpisodesService> _logger;
+    private readonly ILogger<EpisodesService> _logger;
 
-    public WatchedEpisodesService(ApplicationDbContext dbContext, ILogger<WatchedEpisodesService> logger)
+    public EpisodesService(ApplicationDbContext dbContext, ILogger<EpisodesService> logger)
     {
         _dbContext = dbContext;
         _logger = logger;
