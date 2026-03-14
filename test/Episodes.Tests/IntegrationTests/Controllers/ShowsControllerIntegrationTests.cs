@@ -142,7 +142,7 @@ public class ShowsControllerIntegrationTests
             ]
         };
         _factory.TvShowService
-            .GetSeasonEpisodesAsync(1396, 1, Arg.Any<CancellationToken>())
+            .GetSeasonEpisodesAsync(EpisodesWebApplicationFactory.TestUserId, 1396, 1, cancellationToken: Arg.Any<CancellationToken>())
             .Returns(serviceResponse);
 
         // Act
@@ -160,6 +160,6 @@ public class ShowsControllerIntegrationTests
             x.Name == "Pilot" && x.EpisodeNumber == 1 && x.AirDate == new DateOnly(2008, 1, 20));
 
         await _factory.TvShowService.Received(1)
-            .GetSeasonEpisodesAsync(1396, 1, Arg.Any<CancellationToken>());
+            .GetSeasonEpisodesAsync(EpisodesWebApplicationFactory.TestUserId, 1396, 1, cancellationToken: Arg.Any<CancellationToken>());
     }
 }

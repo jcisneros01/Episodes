@@ -110,7 +110,7 @@ public class TvShowService : ITvShowService
         return existingGenres.Values.Concat(newGenres).ToList();
     }
 
-    public async Task<TvSeasonResponse> GetSeasonEpisodesAsync(int externaltvShowId, int seasonNumber,
+    public async Task<TvSeasonResponse> GetSeasonEpisodesAsync(int? userId, int externaltvShowId, int seasonNumber,
         CancellationToken cancellationToken)
     {
         var season = await _dbContext.Seasons
@@ -118,7 +118,7 @@ public class TvShowService : ITvShowService
             .Include(x => x.Show)
             .FirstOrDefaultAsync(x => x.Show.ExternalId == externaltvShowId && x.SeasonNumber == seasonNumber,
                 cancellationToken: cancellationToken);
-
+        
         // show not cached yet — cache it so we have the season to attach episodes to
         if (season == null)
         {
@@ -129,11 +129,15 @@ public class TvShowService : ITvShowService
                 .FirstOrDefaultAsync(x => x.Show.ExternalId == externaltvShowId && x.SeasonNumber == seasonNumber,
                     cancellationToken: cancellationToken);
         }
-
+        
         // return cached episodes
         if (season != null && season.Episodes.Count != 0)
         {
-            return season.ToTvSeasonResponse();
+            var tvSeasonResponse = season.ToTvSeasonResponse();
+            
+            await SetWatchedStatus(userId, tvSeasonResponse.Episodes, cancellationToken);
+            
+            return tvSeasonResponse;
         }
 
         // get episodes from tv data provider
@@ -145,10 +149,31 @@ public class TvShowService : ITvShowService
         return season!.ToTvSeasonResponse();
     }
 
+    private async Task SetWatchedStatus(int? userId,
+        List<EpisodeResponse> episodeResponses,
+        CancellationToken cancellationToken)
+    {
+        var episodeIds = episodeResponses.Select(x => x.Id);
+        
+        var watchedEpisodes =
+            await _dbContext.WatchedEpisodes
+                .Where(x => episodeIds.Contains(x.EpisodeId) && x.UserId == userId)
+                .ToListAsync(cancellationToken: cancellationToken);
+
+        var watchedEpisodeIds = watchedEpisodes.Select(x => x.EpisodeId).ToHashSet();
+        foreach (var episode in episodeResponses)
+        {
+            episode.IsWatched = watchedEpisodeIds.Contains(episode.Id);
+        } 
+    }
+
     private async Task CacheNewEpisodes(TmdbTvSeasonDetailsResponse tvSeasonDetailsResponse, Season? season,
         CancellationToken cancellationToken)
     {
-        var existingEpisodeExternalIds = season!.Episodes.Select(e => e.ExternalId).ToHashSet();
+        season!.Overview = tvSeasonDetailsResponse.Overview;
+        season.EpisodeCount = tvSeasonDetailsResponse.Episodes.Count;
+
+        var existingEpisodeExternalIds = season.Episodes.Select(e => e.ExternalId).ToHashSet();
 
         var newEpisodes = tvSeasonDetailsResponse.Episodes
             .Where(x => !existingEpisodeExternalIds.Contains(x.Id))

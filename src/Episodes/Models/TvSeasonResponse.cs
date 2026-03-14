@@ -24,4 +24,6 @@ public sealed class EpisodeResponse
     public DateOnly? AirDate { get; set; } 
 
     public int EpisodeNumber { get; set; }
+
+    public bool IsWatched { get; set; }
 }

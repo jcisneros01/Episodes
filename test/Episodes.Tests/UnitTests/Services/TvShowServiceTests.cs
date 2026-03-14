@@ -189,7 +189,7 @@ public class TvShowServiceTests
             });
 
         // Act
-        var result = await _sut.GetSeasonEpisodesAsync(1396, 1, CancellationToken.None);
+        var result = await _sut.GetSeasonEpisodesAsync(null, 1396, 1, CancellationToken.None);
 
         // Assert
         result.Name.Should().Be("Season 1");

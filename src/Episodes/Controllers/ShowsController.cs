@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
+using Episodes.Data;
 using Episodes.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Episodes.Controllers;
@@ -11,10 +13,12 @@ namespace Episodes.Controllers;
 public class ShowsController : ControllerBase
 {
     private readonly ITvShowService _tvShowService;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public ShowsController(ITvShowService tvShowService)
+    public ShowsController(ITvShowService tvShowService, UserManager<ApplicationUser> userManager)
     {
         _tvShowService = tvShowService;
+        _userManager = userManager;
     }
 
 
@@ -39,7 +43,19 @@ public class ShowsController : ControllerBase
     public async Task<IActionResult> GetSeasonEpisodes(int tvShowId, int seasonNumber,
         CancellationToken cancellationToken = default)
     {
-        var result = await _tvShowService.GetSeasonEpisodesAsync(tvShowId, seasonNumber, cancellationToken);
+        var userId = GetUserId();
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+
+        var result = await _tvShowService.GetSeasonEpisodesAsync(userId, tvShowId, seasonNumber, cancellationToken);
         return Ok(result);
+    }
+    
+    private int? GetUserId()
+    {
+        var userIdString = _userManager.GetUserId(User);
+        return int.TryParse(userIdString, out var userId) ? userId : null;
     }
 }
