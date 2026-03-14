@@ -28,6 +28,7 @@ export interface Episode {
   name: string
   overview: string | null
   air_date: string | null
+  is_watched: boolean
 }
 
 export interface TvSeasonResponse {
