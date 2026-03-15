@@ -1,5 +1,6 @@
 using Episodes.Clients;
 using Episodes.Data;
+using Episodes.Enums;
 using Episodes.Services;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
@@ -26,6 +27,7 @@ public class TvShowServiceTests
         _dbContext = new ApplicationDbContext(options);
         _dbContext.Database.EnsureCreated();
         _dbContext.TvDataProviders.Add(new TvDataProvider { Id = 1, Name = "tmdb" });
+        _dbContext.Users.Add(new ApplicationUser { Id = 1, UserName = "user1" });
         _dbContext.SaveChanges();
 
         _client = Substitute.For<ITmdbClient>();
@@ -215,5 +217,115 @@ public class TvShowServiceTests
         });
 
         await _client.Received(1).GetTvShowSeasonDetailsAsync(1396, 1, Arg.Any<CancellationToken>());
+    }
+
+    [Test]
+    public async Task GetTvShowAsync_WhenShowExists_ReturnsShow()
+    {
+        // Arrange — seed via GetTvShowByExternalIdAsync
+        _client.GetTvShowDetailsAsync(1396, Arg.Any<CancellationToken>())
+            .Returns(new TmdbTvDetailsResponse
+            {
+                Id = 1396,
+                Name = "Breaking Bad",
+                Status = "Ended",
+                Networks = [new TmdbNetwork { Name = "AMC" }],
+                Genres = [new TmdbGenre { Name = "Drama" }],
+                Seasons = [new TmdbSeasonSummary { Id = 3572, Name = "Season 1", SeasonNumber = 1, EpisodeCount = 7 }]
+            });
+        var created = await _sut.GetTvShowByExternalIdAsync(1396, CancellationToken.None);
+
+        // Act
+        var result = await _sut.GetTvShowAsync(created.Id, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.Id.Should().Be(created.Id);
+        result.Name.Should().Be("Breaking Bad");
+    }
+
+    [Test]
+    public async Task GetTvShowAsync_WhenShowDoesNotExist_ReturnsNull()
+    {
+        // Act
+        var result = await _sut.GetTvShowAsync(9999, CancellationToken.None);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetSeasonEpisodesAsync_WhenUserHasWatchedEpisodes_SetsIsWatchedTrue()
+    {
+        // Arrange
+        _client.GetTvShowDetailsAsync(1396, Arg.Any<CancellationToken>())
+            .Returns(new TmdbTvDetailsResponse
+            {
+                Id = 1396,
+                Name = "Breaking Bad",
+                Status = "Ended",
+                Networks = [new TmdbNetwork { Id = 174, Name = "AMC" }],
+                Genres = [new TmdbGenre { Id = 18, Name = "Drama" }],
+                Seasons =
+                [
+                    new TmdbSeasonSummary { Id = 3572, Name = "Season 1", SeasonNumber = 1, EpisodeCount = 2 }
+                ]
+            });
+        _client.GetTvShowSeasonDetailsAsync(1396, 1, Arg.Any<CancellationToken>())
+            .Returns(new TmdbTvSeasonDetailsResponse
+            {
+                Name = "Season 1",
+                Overview = "The first season.",
+                SeasonNumber = 1,
+                Episodes =
+                [
+                    new TmdbSeasonEpisode
+                    {
+                        Id = 101,
+                        Name = "Pilot",
+                        Overview = "Walter White begins.",
+                        AirDate = "2008-01-20",
+                        EpisodeNumber = 1
+                    },
+                    new TmdbSeasonEpisode
+                    {
+                        Id = 102,
+                        Name = "Cat's in the Bag",
+                        Overview = "Walt and Jesse.",
+                        AirDate = "2008-01-27",
+                        EpisodeNumber = 2
+                    }
+                ]
+            });
+
+        var show = await _sut.GetTvShowByExternalIdAsync(1396, CancellationToken.None);
+
+        // Fetch episodes to cache them
+        await _sut.GetSeasonEpisodesAsync(null, show.Id, 1, CancellationToken.None);
+
+        // Add user to watchlist and mark first episode as watched
+        _dbContext.UserShows.Add(new UserShow
+        {
+            UserId = 1, ShowId = show.Id, Status = UserShowStatus.Current,
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        });
+        await _dbContext.SaveChangesAsync();
+
+        var firstEpisode = await _dbContext.Episodes.FirstAsync(e => e.EpisodeNumber == 1);
+        _dbContext.WatchedEpisodes.Add(new WatchedEpisode
+        {
+            UserId = 1,
+            EpisodeId = firstEpisode.Id,
+            WatchedAt = DateTime.UtcNow
+        });
+        await _dbContext.SaveChangesAsync();
+
+        // Act
+        var result = await _sut.GetSeasonEpisodesAsync(1, show.Id, 1, CancellationToken.None);
+
+        // Assert
+        result.Episodes.Should().HaveCount(2);
+        result.Episodes[0].IsWatched.Should().BeTrue();
+        result.Episodes[1].IsWatched.Should().BeFalse();
     }
 }

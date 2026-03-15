@@ -15,6 +15,7 @@ public class EpisodesWebApplicationFactory : WebApplicationFactory<Program>
 
     public ITvShowService TvShowService { get; } = Substitute.For<ITvShowService>();
     public IWatchlistService WatchlistService { get; } = Substitute.For<IWatchlistService>();
+    public IEpisodesService EpisodesService { get; } = Substitute.For<IEpisodesService>();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -35,6 +36,7 @@ public class EpisodesWebApplicationFactory : WebApplicationFactory<Program>
         {
             services.AddSingleton(TvShowService);
             services.AddSingleton(WatchlistService);
+            services.AddSingleton(EpisodesService);
 
             services.AddAuthentication("Test")
                 .AddScheme<AuthenticationSchemeOptions, FakeAuthHandler>("Test", _ => { });

@@ -85,6 +85,45 @@ public class ShowsControllerTests
     }
 
     [Test]
+    public async Task GetTvShow_WhenNotFound_ReturnsNotFound()
+    {
+        // Arrange
+        _tvShowService.GetTvShowAsync(9999, Arg.Any<CancellationToken>())
+            .Returns((TvShowResponse?)null);
+
+        // Act
+        var result = await _sut.GetTvShow(9999);
+
+        // Assert
+        result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [Test]
+    public async Task GetTvShowByExternalId_WhenSuccessful_ReturnsOk()
+    {
+        // Arrange
+        var expected = new TvShowResponse
+        {
+            Id = 1,
+            Name = "Breaking Bad",
+            PosterPath = "/ggFHVNu6YYI5L9pCfOacjizRGt.jpg",
+            Overview = "Walter White's transformation",
+            Status = "Ended"
+        };
+        _tvShowService.GetTvShowByExternalIdAsync(1396, Arg.Any<CancellationToken>())
+            .Returns(expected);
+
+        // Act
+        var result = await _sut.GetTvShowByExternalId(1396);
+
+        // Assert
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        okResult.StatusCode.Should().Be(200);
+        okResult.Value.Should().Be(expected);
+        await _tvShowService.Received(1).GetTvShowByExternalIdAsync(1396, Arg.Any<CancellationToken>());
+    }
+
+    [Test]
     public async Task GetSeasonEpisodesAsync_WhenSuccessful_ReturnsOk()
     {
         // Arrange
