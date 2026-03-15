@@ -11,18 +11,25 @@ export async function searchShows(
 }
 
 export async function getShow(
-  tvShowId: number,
+  showId: number,
   signal?: AbortSignal,
 ): Promise<TvShowResponse> {
-  return fetchJson<TvShowResponse>(`/api/shows/${tvShowId}`, { signal })
+  return fetchJson<TvShowResponse>(`/api/shows/${showId}`, { signal })
+}
+
+export async function getShowByExternalId(
+  externalId: number,
+  signal?: AbortSignal,
+): Promise<TvShowResponse> {
+  return fetchJson<TvShowResponse>(`/api/shows/external/${externalId}`, { signal })
 }
 
 export async function getSeasonEpisodes(
-  tvShowId: number,
+  showId: number,
   seasonNumber: number,
   signal?: AbortSignal,
 ): Promise<TvSeasonResponse> {
-  return fetchJson<TvSeasonResponse>(`/api/shows/${tvShowId}/season/${seasonNumber}`, { signal })
+  return fetchJson<TvSeasonResponse>(`/api/shows/${showId}/season/${seasonNumber}`, { signal })
 }
 
 export async function getWatchlist(signal?: AbortSignal): Promise<WatchlistItem[]> {

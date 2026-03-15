@@ -9,7 +9,7 @@ public static class ShowExtensions
     {
         return new TvShowResponse
         {
-            Id = show.ExternalId,
+            Id = show.Id,
             Name = show.Name,
             PosterPath = show.PosterImgLink,
             Overview = show.Overview,

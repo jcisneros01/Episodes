@@ -24,48 +24,6 @@ public static class TmdbExtensions
         };
     }
 
-    public static TvShowResponse ToTvShowResponse(this TmdbTvDetailsResponse tmdb)
-    {
-        return new TvShowResponse
-        {
-            Id = tmdb.Id,
-            Name = tmdb.Name,
-            PosterPath = tmdb.PosterPath,
-            Overview = tmdb.Overview,
-            FirstAirDate = DateOnly.TryParse(tmdb.FirstAirDate, out var date) ? date : null,
-            InProduction = tmdb.InProduction,
-            Networks = tmdb.Networks.Select(x => x.Name).ToList(),
-            Genres = tmdb.Genres.Select(x => x.Name).ToList(),
-            Status = tmdb.Status,
-            NumberOfSeasons = tmdb.NumberOfSeasons,
-            NumberOfEpisodes = tmdb.NumberOfEpisodes,
-            Seasons = tmdb.Seasons.Select(x => new TvSeasonSummary
-            {
-                Name = x.Name,
-                SeasonNumber = x.SeasonNumber,
-                EpisodeCount = x.EpisodeCount
-            }).OrderBy(x=> x.SeasonNumber).ToList()
-        };
-    }
-
-    public static TvSeasonResponse ToTvSeasonResponse(this TmdbTvSeasonDetailsResponse tmdb)
-    {
-        return new TvSeasonResponse
-        {
-            Name = tmdb.Name,
-            Overview = tmdb.Overview,
-            SeasonNumber = tmdb.SeasonNumber,
-            EpisodeCount = tmdb.Episodes.Count,
-            Episodes = tmdb.Episodes.Select(x => new EpisodeResponse
-            {
-                Name = x.Name,
-                Overview = x.Overview,
-                AirDate = DateOnly.TryParse(x.AirDate, out var airDate) ? airDate : null,
-                EpisodeNumber = x.EpisodeNumber
-            }).ToList()
-        };
-    }
-
     public static Show ToShow(this TmdbTvDetailsResponse tmdb)
     {
         return new Show

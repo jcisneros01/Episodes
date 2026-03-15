@@ -6,8 +6,9 @@ const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500'
 
 interface ShowDetailProps {
   showId: number
+  idType: 'internal' | 'external'
   onBack: () => void
-  isOnWatchlist: boolean
+  isOnWatchlist: (showId: number) => boolean
   onAddToWatchlist: (showId: number) => Promise<unknown>
   onRemoveFromWatchlist: (showId: number) => Promise<void>
 }
@@ -36,17 +37,18 @@ function DetailSkeleton() {
   )
 }
 
-export function ShowDetail({ showId, onBack, isOnWatchlist, onAddToWatchlist, onRemoveFromWatchlist }: ShowDetailProps) {
-  const { show, loading, error } = useShowDetail(showId)
+export function ShowDetail({ showId, idType, onBack, isOnWatchlist, onAddToWatchlist, onRemoveFromWatchlist }: ShowDetailProps) {
+  const { show, loading, error } = useShowDetail(showId, idType)
   const [watchlistLoading, setWatchlistLoading] = useState(false)
 
   const handleWatchlistToggle = async () => {
+    if (!show) return
     setWatchlistLoading(true)
     try {
-      if (isOnWatchlist) {
-        await onRemoveFromWatchlist(showId)
+      if (isOnWatchlist(show.id)) {
+        await onRemoveFromWatchlist(show.id)
       } else {
-        await onAddToWatchlist(showId)
+        await onAddToWatchlist(show.id)
       }
     } catch {
       // errors handled by parent
@@ -124,14 +126,14 @@ export function ShowDetail({ showId, onBack, isOnWatchlist, onAddToWatchlist, on
                   onClick={handleWatchlistToggle}
                   disabled={watchlistLoading}
                   className={`shrink-0 rounded-lg px-4 py-2 text-sm font-semibold transition disabled:opacity-50 ${
-                    isOnWatchlist
+                    isOnWatchlist(show.id)
                       ? 'border border-gray-600 bg-gray-800 text-gray-300 hover:border-red-500/40 hover:text-red-400'
                       : 'bg-indigo-500 text-white hover:bg-indigo-400'
                   }`}
                 >
                   {watchlistLoading
                     ? '...'
-                    : isOnWatchlist
+                    : isOnWatchlist(show.id)
                       ? 'Remove from Watchlist'
                       : 'Add to Watchlist'}
                 </button>
@@ -177,7 +179,7 @@ export function ShowDetail({ showId, onBack, isOnWatchlist, onAddToWatchlist, on
               <h3 className="text-xl font-semibold text-gray-100">Seasons</h3>
               <div className="space-y-3">
                 {show.seasons.map((season) => (
-                  <SeasonAccordionItem key={season.id} tvShowId={show.id} season={season} />
+                  <SeasonAccordionItem key={season.id} tvShowId={show.id} season={season} isOnWatchlist={isOnWatchlist(show.id)} />
                 ))}
               </div>
             </div>

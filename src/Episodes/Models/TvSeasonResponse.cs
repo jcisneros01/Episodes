@@ -15,6 +15,8 @@ public sealed class TvSeasonResponse
 
 public sealed class EpisodeResponse
 {
+    public int Id { get; set; }
+
     public string Name { get; set; } = string.Empty;
 
     public string? Overview { get; set; } = string.Empty;
@@ -22,4 +24,6 @@ public sealed class EpisodeResponse
     public DateOnly? AirDate { get; set; } 
 
     public int EpisodeNumber { get; set; }
+
+    public bool IsWatched { get; set; }
 }

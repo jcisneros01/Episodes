@@ -15,6 +15,7 @@ public static class SeasonExtensions
             EpisodeCount = season.EpisodeCount,
             Episodes = season.Episodes.Select(episode => new EpisodeResponse
             {
+                Id = episode.Id,
                 Name = episode.Name,
                 Overview = episode.Overview,
                 AirDate = episode.AirDate,

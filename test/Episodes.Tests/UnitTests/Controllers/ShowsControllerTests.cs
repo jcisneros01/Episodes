@@ -1,7 +1,10 @@
+using System.Security.Claims;
 using Episodes.Controllers;
+using Episodes.Data;
 using Episodes.Models;
 using Episodes.Services;
 using FluentAssertions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NUnit.Framework;
@@ -15,7 +18,18 @@ public class ShowsControllerTests
     public void SetUp()
     {
         _tvShowService = Substitute.For<ITvShowService>();
-        _sut = new ShowsController(_tvShowService);
+        var userManager = Substitute.For<UserManager<ApplicationUser>>(
+            Substitute.For<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null);
+        userManager.GetUserId(Arg.Any<ClaimsPrincipal>()).Returns("1");
+        _sut = new ShowsController(_tvShowService, userManager);
+        _sut.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity(
+                    [new Claim(ClaimTypes.NameIdentifier, "1")], "Test"))
+            }
+        };
     }
 
     private ITvShowService _tvShowService;
@@ -71,6 +85,45 @@ public class ShowsControllerTests
     }
 
     [Test]
+    public async Task GetTvShow_WhenNotFound_ReturnsNotFound()
+    {
+        // Arrange
+        _tvShowService.GetTvShowAsync(9999, Arg.Any<CancellationToken>())
+            .Returns((TvShowResponse?)null);
+
+        // Act
+        var result = await _sut.GetTvShow(9999);
+
+        // Assert
+        result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [Test]
+    public async Task GetTvShowByExternalId_WhenSuccessful_ReturnsOk()
+    {
+        // Arrange
+        var expected = new TvShowResponse
+        {
+            Id = 1,
+            Name = "Breaking Bad",
+            PosterPath = "/ggFHVNu6YYI5L9pCfOacjizRGt.jpg",
+            Overview = "Walter White's transformation",
+            Status = "Ended"
+        };
+        _tvShowService.GetTvShowByExternalIdAsync(1396, Arg.Any<CancellationToken>())
+            .Returns(expected);
+
+        // Act
+        var result = await _sut.GetTvShowByExternalId(1396);
+
+        // Assert
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        okResult.StatusCode.Should().Be(200);
+        okResult.Value.Should().Be(expected);
+        await _tvShowService.Received(1).GetTvShowByExternalIdAsync(1396, Arg.Any<CancellationToken>());
+    }
+
+    [Test]
     public async Task GetSeasonEpisodesAsync_WhenSuccessful_ReturnsOk()
     {
         // Arrange
@@ -81,7 +134,7 @@ public class ShowsControllerTests
             SeasonNumber = 1,
             Episodes = [new EpisodeResponse { Name = "Pilot", EpisodeNumber = 1 }]
         };
-        _tvShowService.GetSeasonEpisodesAsync(1396, 1, Arg.Any<CancellationToken>())
+        _tvShowService.GetSeasonEpisodesAsync(1, 1396, 1, cancellationToken: Arg.Any<CancellationToken>())
             .Returns(expected);
 
         // Act
@@ -91,6 +144,6 @@ public class ShowsControllerTests
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
         okResult.StatusCode.Should().Be(200);
         okResult.Value.Should().Be(expected);
-        await _tvShowService.Received(1).GetSeasonEpisodesAsync(1396, 1, Arg.Any<CancellationToken>());
+        await _tvShowService.Received(1).GetSeasonEpisodesAsync(1, 1396, 1, cancellationToken: Arg.Any<CancellationToken>());
     }
 }

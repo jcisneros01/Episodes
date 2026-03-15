@@ -95,9 +95,9 @@ public class WatchlistServiceTests
 
         // Assert
         result.Should().HaveCount(2);
-        result[0].ShowId.Should().Be(1399);
+        result[0].ShowId.Should().Be(show2.Id);
         result[0].Name.Should().Be("Game of Thrones");
-        result[1].ShowId.Should().Be(1396);
+        result[1].ShowId.Should().Be(show1.Id);
         result[1].Name.Should().Be("Breaking Bad");
     }
 
@@ -136,7 +136,7 @@ public class WatchlistServiceTests
 
         // Assert
         result.Should().ContainSingle();
-        result[0].ShowId.Should().Be(1396);
+        result[0].ShowId.Should().Be(show.Id);
     }
 
     [Test]
@@ -146,12 +146,12 @@ public class WatchlistServiceTests
         var show = CreateShow(1396, "Breaking Bad", "/poster.jpg");
 
         // Act
-        var result = await _sut.AddShowAsync(1, 1396);
+        var result = await _sut.AddShowAsync(1, show.Id);
 
         // Assert
         result.Error.Should().BeNull();
         result.Item.Should().NotBeNull();
-        result.Item!.ShowId.Should().Be(1396);
+        result.Item!.ShowId.Should().Be(show.Id);
         result.Item.Name.Should().Be("Breaking Bad");
         result.Item.PosterImgLink.Should().Be("/poster.jpg");
         result.Item.Status.Should().Be(UserShowStatus.Current);
@@ -184,7 +184,7 @@ public class WatchlistServiceTests
         await _dbContext.SaveChangesAsync();
 
         // Act
-        var result = await _sut.AddShowAsync(1, 1396);
+        var result = await _sut.AddShowAsync(1, show.Id);
 
         // Assert
         result.Error.Should().Be(AddShowError.AlreadyOnWatchlist);
@@ -204,9 +204,64 @@ public class WatchlistServiceTests
         await _dbContext.SaveChangesAsync();
 
         // Act
-        await _sut.RemoveShowAsync(1, 1396);
+        await _sut.RemoveShowAsync(1, show.Id);
 
         // Assert
+        var userShow = await _dbContext.UserShows.FirstOrDefaultAsync(x => x.UserId == 1 && x.ShowId == show.Id);
+        userShow.Should().BeNull();
+    }
+
+    [Test]
+    public async Task RemoveShowAsync_WhenShowOnWatchlist_AlsoRemovesWatchedEpisodes()
+    {
+        // Arrange
+        var show = CreateShow(1396, "Breaking Bad");
+        var season = new Season
+        {
+            ShowId = show.Id,
+            Name = "Season 1",
+            SeasonNumber = 1,
+            DataProviderId = 1,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        _dbContext.Seasons.Add(season);
+        await _dbContext.SaveChangesAsync();
+
+        var episode = new Episode
+        {
+            SeasonId = season.Id,
+            Name = "Pilot",
+            EpisodeNumber = 1,
+            ExternalId = 100,
+            DataProviderId = 1,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        _dbContext.Episodes.Add(episode);
+        await _dbContext.SaveChangesAsync();
+
+        _dbContext.UserShows.Add(new UserShow
+        {
+            UserId = 1, ShowId = show.Id, Status = UserShowStatus.Current,
+            CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+        });
+        _dbContext.WatchedEpisodes.Add(new WatchedEpisode
+        {
+            UserId = 1,
+            EpisodeId = episode.Id,
+            WatchedAt = DateTime.UtcNow
+        });
+        await _dbContext.SaveChangesAsync();
+
+        // Act
+        await _sut.RemoveShowAsync(1, show.Id);
+
+        // Assert
+        var watchedEpisodes = await _dbContext.WatchedEpisodes
+            .Where(x => x.UserId == 1 && x.EpisodeId == episode.Id)
+            .ToListAsync();
+        watchedEpisodes.Should().BeEmpty();
         var userShow = await _dbContext.UserShows.FirstOrDefaultAsync(x => x.UserId == 1 && x.ShowId == show.Id);
         userShow.Should().BeNull();
     }

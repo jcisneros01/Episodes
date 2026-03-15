@@ -122,6 +122,52 @@ public class ShowsControllerIntegrationTests
     }
 
     [Test]
+    public async Task GetTvShow_WhenNotFound_ReturnsNotFound()
+    {
+        // Arrange
+        _factory.TvShowService
+            .GetTvShowAsync(9999, Arg.Any<CancellationToken>())
+            .Returns((TvShowResponse?)null);
+
+        // Act
+        var responseMessage = await _client.GetAsync("/api/shows/9999");
+
+        // Assert
+        responseMessage.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Test]
+    public async Task GetTvShowByExternalId_WhenSuccessful_ReturnsOk()
+    {
+        // Arrange
+        var serviceResponse = new TvShowResponse
+        {
+            Id = 1,
+            Name = "Breaking Bad",
+            PosterPath = "/ggFHVNu6YYI5L9pCfOacjizRGt.jpg",
+            Overview = "Walter White's transformation",
+            Status = "Ended"
+        };
+        _factory.TvShowService
+            .GetTvShowByExternalIdAsync(1396, Arg.Any<CancellationToken>())
+            .Returns(serviceResponse);
+
+        // Act
+        var responseMessage = await _client.GetAsync("/api/shows/external/1396");
+
+        // Assert
+        responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var response = await responseMessage.DeserializeJsonAsync<TvShowResponse>();
+        response.Should().NotBeNull();
+        response.Id.Should().Be(1);
+        response.Name.Should().Be("Breaking Bad");
+
+        await _factory.TvShowService.Received(1)
+            .GetTvShowByExternalIdAsync(1396, Arg.Any<CancellationToken>());
+    }
+
+    [Test]
     public async Task GetSeasonEpisodesAsync_WhenSuccessful_ReturnsOk()
     {
         // Arrange
@@ -142,7 +188,7 @@ public class ShowsControllerIntegrationTests
             ]
         };
         _factory.TvShowService
-            .GetSeasonEpisodesAsync(1396, 1, Arg.Any<CancellationToken>())
+            .GetSeasonEpisodesAsync(EpisodesWebApplicationFactory.TestUserId, 1396, 1, cancellationToken: Arg.Any<CancellationToken>())
             .Returns(serviceResponse);
 
         // Act
@@ -160,6 +206,6 @@ public class ShowsControllerIntegrationTests
             x.Name == "Pilot" && x.EpisodeNumber == 1 && x.AirDate == new DateOnly(2008, 1, 20));
 
         await _factory.TvShowService.Received(1)
-            .GetSeasonEpisodesAsync(1396, 1, Arg.Any<CancellationToken>());
+            .GetSeasonEpisodesAsync(EpisodesWebApplicationFactory.TestUserId, 1396, 1, cancellationToken: Arg.Any<CancellationToken>());
     }
 }
